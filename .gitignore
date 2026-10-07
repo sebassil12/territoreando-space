@@ -1,0 +1,39 @@
+# --- SAFFIRE-II raw data (NASA PSI). Never commit: ~2.4 GB of images and archives. ---
+descompressed/
+SAFFIRE*/
+SAFIRE*/
+SAFFIRE*.zip
+SAFFIRE_II*.zip
+SAFIRE*.zip
+*.zip
+*.tif
+*.tiff
+*.jpeg
+*.jpg
+*.jpeg.png
+urban2019.pdf
+SaffireII*.pdf
+Saffire-II*.docx
+saffire_inventory.csv
+structure.txt
+continuidad_*.csv
+
+# --- Python ---
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# --- Node / frontend ---
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# --- Editors / OS / local env ---
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
