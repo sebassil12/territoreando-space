@@ -1,7 +1,7 @@
 [project]
 name = "flame-in-freefall"
 version = "0.1.0"
-description = "SAFFIRE-II evidence-exploration dashboard (NASA Space Apps 2026)"
+description = "Findings-first microgravity combustion dashboard (NASA Space Apps 2026)"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",
@@ -19,3 +19,18 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 110
+
+[tool.ruff.lint]
+# Límites de clean code (AGENTS.md §4): complejidad, parámetros y sentencias por función.
+extend-select = ["C901", "PLR0913", "PLR0915"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 4
+max-statements = 30
+
+[tool.ruff.lint.per-file-ignores]
+# Los constructores de datos sintéticos de las pruebas necesitan muchos parámetros.
+"tests/*" = ["PLR0913"]

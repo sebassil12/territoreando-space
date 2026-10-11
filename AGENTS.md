@@ -130,6 +130,8 @@ Aplica a todo código nuevo o modificado. El código existente se ajusta cuando 
 - Una función hace una sola cosa: o calcula, o hace I/O, o formatea. Lógica pura separada de I/O para poder probarla.
 - Sin números mágicos: constantes con nombre (`GAP_FACTOR = 2`).
 - Excepciones a estos límites se justifican con un comentario en el código, no en silencio.
+- Ruff los verifica en Python (`pyproject.toml`): `C901` complejidad ≤ 10, `PLR0913` ≤ 4 parámetros,
+  `PLR0915` ≤ 30 sentencias. La deuda previa está marcada con `# noqa` y se refactoriza al tocarla.
 
 ### Reutilización
 - **Clases y componentes reutilizables** para conceptos con identidad propia: `dataclass(frozen=True)` en Python

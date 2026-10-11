@@ -50,7 +50,7 @@ CALIBRATION_COLUMNS = [
 ]
 
 
-def sequence_id(group: str, camera: str, file_type: str, part: str, folder: str) -> str:
+def sequence_id(group: str, camera: str, file_type: str, part: str, folder: str) -> str:  # noqa: PLR0913 — deuda previa a AGENTS.md §4; refactorizar al tocar
     variant = FILE_TYPES[file_type][1]
     if "ICMAD" in folder.upper() and variant != "icmad":
         variant += "-icmad"  # p. ej. Mapped TIFF procesado con ICMAD (S6C1 v2)
@@ -133,7 +133,7 @@ def grid_reference_mm(file_name: str) -> str:
     return m.group(1) if m else ""
 
 
-def build(raw_root: Path, out: Path = OUT) -> dict:
+def build(raw_root: Path, out: Path = OUT) -> dict:  # noqa: C901, PLR0915 — deuda previa a AGENTS.md §4; refactorizar al tocar
     with open(raw_root / INVENTORY, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
 

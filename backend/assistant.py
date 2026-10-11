@@ -33,7 +33,7 @@ class Context:
     primary_of: dict
 
 
-def _answer(observation, interpretation, evidence, limitations, grounded=True):
+def _answer(observation, interpretation, evidence, limitations, grounded=True):  # noqa: PLR0913 — deuda previa a AGENTS.md §4; refactorizar al tocar
     return {
         "observation": observation,
         "interpretation": interpretation,
@@ -127,7 +127,7 @@ def _paper(ctx: Context, q: str):
                    "Published values apply to their tested conditions and are not linked to a specific image folder here.")
 
 
-def answer(ctx: Context, question: str, sequence_id: str | None = None) -> dict:
+def answer(ctx: Context, question: str, sequence_id: str | None = None) -> dict:  # noqa: C901 — deuda previa a AGENTS.md §4; refactorizar al tocar
     q = question.lower().strip()
     if not q:
         return _not_available("Empty question.")

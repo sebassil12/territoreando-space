@@ -82,7 +82,7 @@ def sequence_warnings(seq: dict, primary_of: dict, calibration_status: str) -> l
     return w
 
 
-def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = REFERENCES) -> FastAPI:
+def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = REFERENCES) -> FastAPI:  # noqa: C901, PLR0915 — deuda previa a AGENTS.md §4; refactorizar al tocar
     sequences = {s["sequence_id"]: s for s in _read_csv(processed / "sequence_catalog.csv")}
     frames = _read_csv(processed / "frame_catalog.csv")
     frames_by_id = {f["frame_id"]: f for f in frames}
@@ -135,7 +135,7 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
                          "investigation metadata comes from urban2019.pdf only.")])
 
     @app.get("/api/sequences")
-    def list_sequences(group: str | None = None, camera: str | None = None, file_type: str | None = None,
+    def list_sequences(group: str | None = None, camera: str | None = None, file_type: str | None = None,  # noqa: PLR0913 — deuda previa a AGENTS.md §4; refactorizar al tocar
                        processing_variant: str | None = None, temporal_quality: str | None = None):
         filters = {"group": group, "camera": camera, "file_type": file_type,
                    "processing_variant": processing_variant, "temporal_quality": temporal_quality}
