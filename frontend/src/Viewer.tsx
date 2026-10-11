@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { get, type Envelope, type Frame, type FrameDetail, type Metrics, type Sequence } from './api'
+import { isKey, useT } from './i18n'
 import { Warnings, QualityBadge } from './ui'
 
-const METRIC_LABELS: Record<string, string> = {
-  mean_intensity: 'Mean intensity',
-  bright_pixel_fraction: 'Bright-pixel fraction',
-  bright_area_pixels: 'Bright area',
-  centroid_x: 'Bright centroid x',
-  centroid_y: 'Bright centroid y',
-  bbox_width_pixels: 'Bright bounding-box width',
-  bbox_height_pixels: 'Bright bounding-box height',
+const METRICS = ['mean_intensity', 'bright_pixel_fraction', 'bright_area_pixels', 'centroid_x', 'centroid_y',
+  'bbox_width_pixels', 'bbox_height_pixels'] as const
+
+function useMetricLabel() {
+  const { t } = useT()
+  return (name: string) => { const k = `metric.${name}`; return isKey(k) ? t(k) : name }
 }
 
 export function Viewer({ sequenceId }: { sequenceId: string }) {
+  const { t } = useT()
   const [seq, setSeq] = useState<Envelope<Sequence> | null>(null)
   const [frames, setFrames] = useState<Frame[]>([])
   const [index, setIndex] = useState(0)
@@ -40,8 +40,8 @@ export function Viewer({ sequenceId }: { sequenceId: string }) {
     get<FrameDetail>(`/api/frames/${frame.frame_id}`).then(setDetail).catch(() => setDetail(null))
   }, [frame, playing])
 
-  if (error) return <p className="text-red-300">Could not load sequence: {error}</p>
-  if (!seq || !frames.length) return <p className="text-slate-400">Loading sequence…</p>
+  if (error) return <p className="text-red-300">{t('viewer.loadError', { error })}</p>
+  if (!seq || !frames.length) return <p className="text-slate-400">{t('viewer.loading')}</p>
   const s = seq.data
 
   return (
@@ -50,7 +50,7 @@ export function Viewer({ sequenceId }: { sequenceId: string }) {
         <h2 className="text-xl font-semibold">{s.sequence_id}</h2>
         <QualityBadge quality={s.temporal_quality} />
         <span className="text-sm text-slate-400">
-          {s.file_type} · {s.n_files} frames · {s.duration_s} s · role: {s.sequence_role}
+          {t('viewer.summary', { type: s.file_type, n: s.n_files, d: s.duration_s, role: s.sequence_role })}
         </span>
       </header>
       <Warnings items={seq.warnings} />
@@ -59,25 +59,25 @@ export function Viewer({ sequenceId }: { sequenceId: string }) {
         <div className="space-y-3">
           <div className="flex min-h-48 items-center justify-center rounded-lg bg-black p-2">
             {frame.availability === 'available' ? (
-              <img src={`/api/frames/${frame.frame_id}/image`} alt={`Frame ${frame.frame_index} of ${s.sequence_id}`}
+              <img src={`/api/frames/${frame.frame_id}/image`} alt={t('viewer.frameAlt', { i: frame.frame_index, id: s.sequence_id })}
                 className="max-h-[60vh] w-full object-contain [image-rendering:pixelated]" />
             ) : (
-              <p className="text-amber-300">Image not available locally ({frame.availability}). Path: {frame.relative_path}</p>
+              <p className="text-amber-300">{t('viewer.noImage', { availability: frame.availability, path: frame.relative_path })}</p>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button className="btn" onClick={() => setIndex((i) => Math.max(0, i - step))} aria-label="Previous frame">◀ Prev</button>
-            <button className="btn" onClick={() => setPlaying((p) => !p)}>{playing ? '❚❚ Pause' : '▶ Play'}</button>
-            <button className="btn" onClick={() => setIndex((i) => Math.min(frames.length - 1, i + step))} aria-label="Next frame">Next ▶</button>
+            <button className="btn" onClick={() => setIndex((i) => Math.max(0, i - step))} aria-label={t('viewer.prevLabel')}>{t('viewer.prev')}</button>
+            <button className="btn" onClick={() => setPlaying((p) => !p)}>{playing ? t('viewer.pause') : t('viewer.play')}</button>
+            <button className="btn" onClick={() => setIndex((i) => Math.min(frames.length - 1, i + step))} aria-label={t('viewer.nextLabel')}>{t('viewer.next')}</button>
             <label className="ml-2 text-sm text-slate-300">
-              Sampling: every
+              {t('viewer.samplingPre')}
               <select className="input ml-1" value={step} onChange={(e) => setStep(Number(e.target.value))}>
                 {[1, 2, 5, 10, 30].map((n) => <option key={n} value={n}>{n}</option>)}
               </select>
-              frame(s)
+              {' '}{t('viewer.samplingPost')}
             </label>
           </div>
-          <input type="range" min={0} max={frames.length - 1} value={index} aria-label="Frame position"
+          <input type="range" min={0} max={frames.length - 1} value={index} aria-label={t('viewer.position')}
             onChange={(e) => { setPlaying(false); setIndex(Number(e.target.value)) }} className="w-full accent-orange-500" />
           <Provenance s={s} f={frame} />
         </div>
@@ -94,14 +94,15 @@ export function Viewer({ sequenceId }: { sequenceId: string }) {
 }
 
 function Provenance({ s, f }: { s: Sequence; f: Frame }) {
+  const { t } = useT()
   return (
     <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-lg border border-slate-800 p-3 font-mono text-xs sm:grid-cols-3">
-      <Item k="Source" v="NASA PSI / SAFFIRE-II image data" />
-      <Item k="Sequence" v={s.sequence_id} />
-      <Item k="Frame" v={`${f.frame_index} / ${s.n_files - 1}`} />
-      <Item k="Raw ID" v={String(f.raw_id)} />
-      <Item k="Time" v={`${f.time_s.toFixed(3)} s (from raw_id)`} />
-      <Item k="Temporal quality" v={s.temporal_quality} />
+      <Item k={t('science.source')} v={t('prov.sourceValue')} />
+      <Item k={t('prov.sequence')} v={s.sequence_id} />
+      <Item k={t('prov.frame')} v={`${f.frame_index} / ${s.n_files - 1}`} />
+      <Item k={t('prov.rawId')} v={String(f.raw_id)} />
+      <Item k={t('prov.time')} v={t('prov.timeValue', { t: f.time_s.toFixed(3) })} />
+      <Item k={t('prov.quality')} v={s.temporal_quality} />
     </dl>
   )
 }
@@ -116,33 +117,35 @@ function Item({ k, v }: { k: string; v: string }) {
 }
 
 function FrameDetailPanel({ detail }: { detail: Envelope<FrameDetail> | null }) {
-  if (!detail) return <aside className="text-sm text-slate-500">Pause to load frame details.</aside>
+  const { t } = useT()
+  const label = useMetricLabel()
+  if (!detail) return <aside className="text-sm text-slate-500">{t('detail.pause')}</aside>
   const d = detail.data
   return (
     <aside className="space-y-3 rounded-lg border border-slate-800 p-4 text-sm">
-      <h3 className="font-semibold">Frame detail</h3>
+      <h3 className="font-semibold">{t('detail.title')}</h3>
       <dl className="space-y-1 font-mono text-xs">
         <Item k="frame_id" v={d.frame_id} />
-        <Item k="Original relative path" v={d.relative_path} />
-        <Item k="Source file" v={d.source_file} />
-        <Item k="Availability" v={d.availability} />
+        <Item k={t('detail.path')} v={d.relative_path} />
+        <Item k={t('detail.sourceFile')} v={d.source_file} />
+        <Item k={t('detail.availability')} v={d.availability} />
       </dl>
-      <Warnings items={detail.warnings} empty="No frame-level warnings." />
+      <Warnings items={detail.warnings} empty={t('detail.noWarnings')} />
       <div>
-        <h4 className="mb-1 font-medium">Derived image metrics <span className="text-xs text-slate-500">(pixels / intensity only)</span></h4>
+        <h4 className="mb-1 font-medium">{t('detail.metrics')} <span className="text-xs text-slate-500">{t('detail.metricsNote')}</span></h4>
         {Object.keys(d.metrics).length ? (
           <table className="w-full text-xs">
             <tbody>
               {Object.entries(d.metrics).map(([k, m]) => (
                 <tr key={k} className="border-t border-slate-800">
-                  <td className="py-1 text-slate-400">{METRIC_LABELS[k] ?? k}</td>
+                  <td className="py-1 text-slate-400">{label(k)}</td>
                   <td className="py-1 text-right tabular-nums">{m.value} {m.unit}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p className="text-xs text-slate-500">Not computed for this frame (metrics are sampled every 5th frame).</p>
+          <p className="text-xs text-slate-500">{t('detail.notComputed')}</p>
         )}
       </div>
     </aside>
@@ -152,29 +155,31 @@ function FrameDetailPanel({ detail }: { detail: Envelope<FrameDetail> | null }) 
 function Analysis({ sequence, currentTime, onSeek }: { sequence: Sequence; currentTime: number; onSeek: (t: number) => void }) {
   const [m, setM] = useState<Envelope<Metrics> | null>(null)
   const [metric, setMetric] = useState('mean_intensity')
+  const { t } = useT()
+  const label = useMetricLabel()
   useEffect(() => {
     get<Metrics>(`/api/metrics/${sequence.sequence_id}`).then(setM).catch(() => setM(null))
   }, [sequence.sequence_id])
 
-  if (!m) return <p className="text-slate-500">Loading metrics…</p>
+  if (!m) return <p className="text-slate-500">{t('analysis.loading')}</p>
   const points = m.data.points.filter((p) => typeof p[metric] === 'number')
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <h3 className="text-lg font-semibold">Analysis: derived image metric</h3>
-        <select className="input" value={metric} onChange={(e) => setMetric(e.target.value)} aria-label="Metric">
-          {Object.keys(METRIC_LABELS).map((k) => <option key={k} value={k}>{METRIC_LABELS[k]}</option>)}
+        <h3 className="text-lg font-semibold">{t('analysis.title')}</h3>
+        <select className="input" value={metric} onChange={(e) => setMetric(e.target.value)} aria-label={t('analysis.metric')}>
+          {METRICS.map((k) => <option key={k} value={k}>{label(k)}</option>)}
         </select>
-        <span className="rounded bg-sky-900/60 px-2 py-0.5 text-xs text-sky-200">Derived image metric</span>
+        <span className="rounded bg-sky-900/60 px-2 py-0.5 text-xs text-sky-200">{t('analysis.badge')}</span>
       </div>
       <Warnings items={m.warnings} />
       {points.length ? (
-        <LineChart points={points} metric={metric} unit={m.data.units[metric] ?? ''} label={METRIC_LABELS[metric]} duration={sequence.duration_s}
+        <LineChart points={points} metric={metric} unit={m.data.units[metric] ?? ''} label={label(metric)} duration={sequence.duration_s}
           currentTime={currentTime} onSeek={onSeek} />
       ) : (
-        <p className="text-sm text-slate-500">No values for this metric (e.g. no pixel above threshold in any sampled frame).</p>
+        <p className="text-sm text-slate-500">{t('analysis.noValues')}</p>
       )}
-      <p className="text-xs text-slate-500">Method: {m.data.method} · threshold 128 · source: {m.source}</p>
+      <p className="text-xs text-slate-500">{t('analysis.method', { method: m.data.method ?? '—', source: m.source })}</p>
     </section>
   )
 }
@@ -185,6 +190,7 @@ function LineChart({ points, metric, unit, label, duration, currentTime, onSeek 
   points: Record<string, number | string>[]; metric: string; unit: string; label: string; duration: number
   currentTime: number; onSeek: (t: number) => void
 }) {
+  const { t } = useT()
   const svgRef = useRef<SVGSVGElement>(null)
   const [hover, setHover] = useState<Record<string, number | string> | null>(null)
   const { xs, ys, x, y, yTicks, xTicks } = useMemo(() => {
@@ -197,7 +203,7 @@ function LineChart({ points, metric, unit, label, duration, currentTime, onSeek 
     return { xs, ys, x, y, yTicks: ticks(y0, y1), xTicks: ticks(x0, x1) }
   }, [points, metric, duration])
 
-  // Never draw a line across a temporal gap: start a new segment when spacing jumps.
+  // Nunca dibujar una línea a través de un hueco temporal: iniciar un segmento nuevo cuando el espaciado salta.
   const dts = xs.slice(1).map((v, i) => v - xs[i]).sort((a, b) => a - b)
   const gapAt = 3 * (dts[Math.floor(dts.length / 2)] ?? Infinity)
   const path = xs.map((v, i) => `${i && v - xs[i - 1] <= gapAt ? 'L' : 'M'}${x(v).toFixed(1)},${y(ys[i]).toFixed(1)}`).join('')
@@ -215,7 +221,7 @@ function LineChart({ points, metric, unit, label, duration, currentTime, onSeek 
   return (
     <figure className="relative">
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="w-full cursor-crosshair rounded-lg bg-[#1a1a19]"
-        role="img" aria-label={`${label} (${unit}) versus time in seconds`}
+        role="img" aria-label={t('chart.aria', { label, unit })}
         onMouseMove={(e) => setHover(nearest(e.clientX))} onMouseLeave={() => setHover(null)}
         onClick={(e) => onSeek(Number(nearest(e.clientX).time_s))}>
         {yTicks.map((t) => (
@@ -243,7 +249,7 @@ function LineChart({ points, metric, unit, label, duration, currentTime, onSeek 
         </div>
       )}
       <figcaption className="mt-1 text-xs text-slate-400">
-        {label} [{unit}] vs. time [s]. Breaks in the line are temporal gaps. Dashed line = current frame. Click the chart to jump to that time.
+        {t('chart.caption', { label, unit })}
       </figcaption>
     </figure>
   )
