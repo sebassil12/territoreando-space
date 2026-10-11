@@ -36,10 +36,18 @@ SAMPLE_MAPPING = r"\b([sf][1-9])\b"
 # Preguntas de identidad de carpeta ("Is S1 sample 1?", "¿Qué material es S9?"), no de resultados medidos.
 MAPPING_INTENT = r"\b(sample|muestra|material|camera|c[aá]mara|pre-flow|post-flow)\b"
 RESULT_INTENT = r"rate|tasa|length|longitud|spread|propaga|duration|duraci|limit"
+SEQUENCE_INTENT = (r"represent|describe|explain|explica|frame|fotograma|duration|duraci|variant|calibra|camera|"
+                   r"c[aá]mara|channel|canal|\bgroup|\bgrupo|folder|carpeta")
 SAMPLE_MENTION = r"(?:sample|muestra|\bs)\s*([1-9])\b"
 STOPWORDS = frozenset({"what", "which", "does", "about", "with", "from", "that", "this", "there", "have", "were",
                        "paper", "article", "published", "sobre", "dice", "cual", "cuál", "según", "finding",
                        "findings", "hallazgo", "hallazgos", "value", "valor", "sample", "muestra", "saffire"})
+# Palabras genéricas del dominio: aparecen en casi todo hallazgo, así que solas no discriminan nada.
+GENERIC_TERMS = frozenset({"crew", "tripulación", "tripulacion", "astronaut", "astronauts", "astronauta",
+                           "astronautas", "flame", "flames", "llama", "llamas", "samples", "muestras", "fire",
+                           "fuego", "experiment", "experimento", "nasa", "space", "espacio"})
+# Coincidencia mínima: dos términos discriminativos (la muestra citada cuenta), o todos si hay menos.
+MIN_TERM_MATCHES = 2
 
 REFUSAL_MESSAGES = {
     "temperature": "Temperature and heat-release rate are not computed: images carry no radiometric calibration.",
@@ -98,13 +106,22 @@ def _refused(kind: str, seq: dict | None) -> dict:
 
 def _tokens(text: str) -> set[str]:
     words = re.findall(r"[a-záéíóúñü0-9]+", (text or "").lower())
-    return {w for w in words if len(w) >= MIN_TOKEN_LENGTH} - STOPWORDS
+    return {w for w in words if len(w) >= MIN_TOKEN_LENGTH} - STOPWORDS - GENERIC_TERMS
 
 
 def _finding_score(f, tokens: set[str], sample: str | None) -> int:
+    """0 si la coincidencia no es significativa; si no, términos coincidentes más el bono de muestra."""
     text = " ".join(filter(None, [f.title, f.summary, f.theme, f.material, f.observation, f.metric,
                                   f.source_quote]))
-    return len(tokens & _tokens(text)) + (SAMPLE_BONUS if sample and f.sample == sample else 0)
+    words = _tokens(text)
+    # Coincidencia por prefijo: "conflict" encuentra "conflicting" sin un stemmer.
+    matches = sum(any(w.startswith(t) for w in words) for t in tokens)
+    sample_hit = bool(sample) and f.sample == sample
+    # La muestra mencionada cuenta como un término discriminativo más.
+    required = min(MIN_TERM_MATCHES, len(tokens) + bool(sample))
+    if not required or matches + sample_hit < required:
+        return 0
+    return matches + (SAMPLE_BONUS if sample_hit else 0)
 
 
 def search_findings(findings, question: str) -> list:
@@ -208,7 +225,8 @@ def _sequence_answer(ctx: Context, q: str, seq: dict | None) -> dict | None:
         return _continuity(ctx, seq)
     if re.search(r"metric|m[eé]trica|graph|gr[aá]fic|chart|bright|brillo|intensity", q):
         return _metrics(ctx, seq)
-    if re.search(r"represent|describe|explain|explica", q):
+    # Solo preguntas sobre la propia secuencia; el resto no se responde con su descripción.
+    if re.search(SEQUENCE_INTENT, q):
         return _describe(ctx, seq)
     return None
 
@@ -223,5 +241,4 @@ def answer(ctx: Context, question: str, sequence_id: str | None = None) -> dict:
     kind = _refusal_kind(q)
     if kind:
         return _refused(kind, seq)
-    return (_sample_mapping(ctx, q) or _sequence_answer(ctx, q, seq) or _findings_answer(ctx, q)
-            or (_describe(ctx, seq) if seq else None) or _not_available())
+    return _sample_mapping(ctx, q) or _sequence_answer(ctx, q, seq) or _findings_answer(ctx, q) or _not_available()

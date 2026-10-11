@@ -69,3 +69,39 @@ def test_unknown_question_not_available(ask):
     body = ask("zzz qqq")
     assert body["quality"] == "not_available"
     assert body["data"]["status"] == "not_available" and body["data"]["evidence"] == []
+
+
+SEQ = "S1-C2-raw-jpeg-part1"
+
+
+@pytest.mark.parametrize(("q", "sequence_id", "status"), [
+    ("¿Qué dice la fuente sobre la longitud límite de la llama?", None, "answered"),
+    ("¿S1 es la muestra 1?", None, "answered"),
+    ("¿Hay conflicto en el flujo de la muestra 6?", None, "answered"),
+    ("¿Esta secuencia es continua?", SEQ, "answered"),
+    ("¿Cuál fue la humedad relativa?", None, "not_available"),
+    ("¿Cuál fue la humedad relativa?", SEQ, "not_available"),
+    ("¿Cuál es la temperatura de la llama?", None, "refused"),
+    ("What does the source say about the flame length limit?", None, "answered"),
+    ("Is there an airflow conflict for sample 6?", None, "answered"),
+    ("What was the relative humidity?", None, "not_available"),
+])
+def test_frontend_suggested_questions(ask, q, sequence_id, status):
+    assert ask(q, sequence_id)["data"]["status"] == status
+
+
+@pytest.mark.parametrize("q", [
+    "¿Cuál es el color favorito de la tripulación?",
+    "What is the crew's favourite color?",
+    "¿Qué opina la llama de la muestra?",
+])
+@pytest.mark.parametrize("sequence_id", [None, SEQ])
+def test_out_of_scope_question_not_available(ask, q, sequence_id):
+    data = ask(q, sequence_id)["data"]
+    assert data["status"] == "not_available" and data["evidence"] == []
+
+
+@pytest.mark.parametrize("q", ["¿Qué representa esta secuencia?", "How many frames does it have?"])
+def test_sequence_context_answers_sequence_questions(ask, q):
+    data = ask(q, SEQ)["data"]
+    assert data["status"] == "answered" and SEQ in data["observation"]
