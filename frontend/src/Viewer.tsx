@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { get, type Envelope, type Frame, type FrameDetail, type Metrics, type Sequence } from './api'
 import { isKey, useT } from './i18n'
-import { Warnings, QualityBadge } from './ui'
+import { IncompleteBadge, Warnings, QualityBadge } from './ui'
 
 const METRICS = ['mean_intensity', 'bright_pixel_fraction', 'bright_area_pixels', 'centroid_x', 'centroid_y',
   'bbox_width_pixels', 'bbox_height_pixels'] as const
@@ -49,6 +49,7 @@ export function Viewer({ sequenceId }: { sequenceId: string }) {
       <header className="flex flex-wrap items-baseline gap-3">
         <h2 className="text-xl font-semibold">{s.sequence_id}</h2>
         <QualityBadge quality={s.temporal_quality} />
+        <IncompleteBadge quality={s.temporal_quality} />
         <span className="text-sm text-slate-400">
           {t('viewer.summary', { type: s.file_type, n: s.n_files, d: s.duration_s, role: s.sequence_role })}
         </span>
@@ -97,7 +98,7 @@ function Provenance({ s, f }: { s: Sequence; f: Frame }) {
   const { t } = useT()
   return (
     <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-lg border border-slate-800 p-3 font-mono text-xs sm:grid-cols-3">
-      <Item k={t('science.source')} v={t('prov.sourceValue')} />
+      <Item k={t('finding.source')} v={t('prov.sourceValue')} />
       <Item k={t('prov.sequence')} v={s.sequence_id} />
       <Item k={t('prov.frame')} v={`${f.frame_index} / ${s.n_files - 1}`} />
       <Item k={t('prov.rawId')} v={String(f.raw_id)} />

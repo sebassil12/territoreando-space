@@ -10,9 +10,30 @@ data/processed/frame_catalog.csv + images ──► pipeline/compute_metrics.py 
 
 descompressed/urban2019.pdf ──(manual transcription, page cited)──► data/scientific_reference_results.json
 
-data/processed/* + references JSON ──► backend/app.py (FastAPI) ──► frontend (React)
-                                    └─► backend/assistant.py (deterministic answers)
+descompressed/urban2019.pdf ─┐
+descompressed/SAFFIRE-II DoD.docx ─┼─(manual transcription, file + location cited)──► data/processed/findings.json
+descompressed/*.xlsx, continuidad_saltos.csv ─┘                                      └─► data/processed/sample_conditions.csv
+
+data/processed/findings.json + sample_conditions.csv + sequence_catalog.csv
+   ──► backend/findings.py (validation at load; invalid findings excluded with a warning)
+   ──► backend/analysis.py (rule-based ranking, side-by-side comparison)
+   ──► backend/routes/findings.py (/api/findings*, /api/conditions, /api/compare)
+
+data/processed/* + references JSON + findings ──► backend/app.py (FastAPI) ──► frontend (React)
+                                              └─► backend/assistant.py (deterministic answers citing finding IDs)
 ```
+
+## Capa de hallazgos
+- `findings.json` se transcribe a mano; cada hallazgo lleva `source_path` y `source_location` (página, sección o
+  tabla). Ningún hallazgo se calcula desde píxeles ni se genera con un LLM.
+- `sample_conditions.csv` transcribe DoD Tabla 1 (imagen embebida; confianza media) y Tabla 2, contrastadas con
+  urban2019 p.173, p.177 y p.181. Las condiciones no reportadas quedan vacías. Si dos fuentes discrepan (flujo de S6),
+  se guardan ambas columnas (`airflow_cm_s_dod`, `airflow_cm_s_urban2019`) y `airflow_status = conflicting`.
+- `related_sequences` enlaza un hallazgo con secuencias del catálogo por la etiqueta compartida (DoD Tabla 2,
+  `F-dod-001`); las imágenes son contexto ilustrativo, no la medición del hallazgo.
+- El puntaje del ranking se deriva solo de las categorías del hallazgo (`backend/analysis.py::RANKING_RULES`) y se
+  expone con su desglose; no es una probabilidad ni un riesgo.
+- Validación: `backend/findings.py` al cargar y `tests/test_findings.py` en CI local (`uv run pytest -q`).
 
 ## Reglas de derivación
 - Los fotogramas se ordenan por `raw_id` (entero en el nombre del archivo).

@@ -92,6 +92,35 @@ Calibración píxel→mm; detección de fotogramas con LED; enmascarado de la ba
 imagen; mapeo carpeta→muestra sin fuente; fuentes adicionales más allá de urban2019; autenticación, base de datos,
 despliegue; cualquier predicción de riesgo, simulación o gemelo digital.
 
+## Estado del MVP (rama `feat/findings-mvp`)
+
+El esquema, los criterios y la API propuestos arriba se implementaron con cambios; la referencia vigente es
+`docs/data-dictionary.md` (sección `findings.json`) y el README (tabla de API). Diferencias principales: categorías
+`high/medium/low` con justificación, `evidence_type` en lugar de `category`, archivo en `data/processed/findings.json`,
+`/api/findings/ranked` y `/api/compare` en lugar de `/api/findings/compare`.
+
+| ID | Estado | Evidencia |
+|---|---|---|
+| P0-1 Esquema de hallazgo | hecho | `docs/data-dictionary.md`, `backend/findings.py` |
+| P0-2 `findings.json` | hecho (24 hallazgos) | `data/processed/findings.json`, `tests/test_findings.py` |
+| P0-3 Criterios de confianza y relevancia | hecho; aprobación del equipo pendiente | `docs/data-dictionary.md` |
+| P0-4 API de hallazgos | hecho | `backend/routes/findings.py`, `backend/analysis.py` |
+| P0-5 UI findings-first | hecho | inicio = Resumen de seguridad; pantallas en `frontend/src/screens/` |
+| P0-6 Interpretación etiquetada | hecho (asistente determinista, sin LLM) | `backend/assistant.py`, `tests/test_assistant.py` |
+| P1-1 Comparación de condiciones | hecho | pestaña Comparación, `GET /api/compare` |
+| P1-2 Evidencia de imagen enlazada | hecho (siempre ilustrativa) | detalle del hallazgo → `#Viewer/<id>` |
+| P1-3 Filtro del asistente ajustado | hecho | `backend/assistant.py` |
+| P1-4 Guion de demo findings-first | hecho | `docs/demo-script.md` |
+| P1-5 Requisitos oficiales | pendiente (tras el 28 de octubre de 2026) | — |
+| T3 Verificación independiente de citas | pendiente | `odd/tasks/findings-mvp.md` |
+| P2-1 … P2-4 | pendiente (P2-4 resuelto en parte por DoD Tabla 2) | — |
+
+Decisiones: D1 resuelta (asistente determinista extendido, sin LLM); D3 resuelta con `SAFFIRE-II DoD.docx`, Tabla 2
+(`F-dod-001`); D2 y D4 siguen abiertas. Limitaciones conocidas del asistente: la búsqueda por palabras clave puede
+responder con hallazgos poco pertinentes a preguntas fuera de alcance (p. ej. "color favorito de la tripulación"
+devuelve `F-urban2019-014`), y con una secuencia de contexto cualquier pregunta no reconocida recibe la descripción
+de la secuencia en lugar de `not_available`.
+
 ## Backlog priorizado
 
 ### P0 — MVP findings-first

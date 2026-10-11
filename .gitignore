@@ -37,3 +37,6 @@ frontend/dist/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Inventario regenerable (28,9 MB): uv run python -m pipeline.build_inventory
+docs/data-inventory.csv

@@ -22,9 +22,9 @@ priorización explicable, comparación de condiciones, evidencia visual de apoyo
   (ruta: delegada; writer A)
 - [x] T2 — API: `/api/findings`, ranking con desglose, `/api/compare`, asistente sobre hallazgos (ruta: delegada; writer A)
 - [ ] T3 — Verificación independiente de citas de hallazgos contra los PDFs/DoD (ruta: delegada; verificador)
-- [ ] T4 — Frontend: resumen de seguridad, explorador, priorizados, comparación, evidencia, asistente; i18n es/en
+- [x] T4 — Frontend: resumen de seguridad, explorador, priorizados, comparación, evidencia, asistente; i18n es/en
   (ruta: delegada; writer B)
-- [ ] T5 — Documentación: README, demo, lineage, limitaciones (ruta: delegada; writer B)
+- [x] T5 — Documentación: README, demo, lineage, limitaciones (ruta: delegada; writer B)
 
 ## Checks
 `uv run pytest -q` · `uv run ruff check pipeline backend tests` · `cd frontend && npm run lint && npm run build`
@@ -48,3 +48,13 @@ PRs encadenados se decide al abrir PR.
   `limitations` como texto (compatibilidad con el frontend actual).
 - Pendiente: T3 (verificación independiente de citas), corregir la página en `scientific_reference_results.json`,
   textos del frontend que aún dicen que S1/C2 no están documentados (`i18n.tsx`: overview.scope3, limits.cannot3).
+- T4/T5 (writer B, ruta delegada): navegación por hash (`#Findings/<id>`, `#Viewer/<id>`); pantallas en
+  `frontend/src/screens/` (SafetyOverview, FindingsExplorer, FindingDetail, Ranked, Compare, Evidence, Assistant,
+  Limitations); componentes en `ui.tsx` (EvidenceTypeBadge, LevelBadge, SourceCitation, WarningBanner,
+  IncompleteBadge); diccionarios divididos en `i18n.es.ts` / `i18n.en.ts`; textos obsoletos sobre S1/C2 corregidos
+  (cita DoD Tabla 2). Pestaña "Contexto científico" retirada: los resultados publicados están en los hallazgos.
+  Docs: README, demo-script, data-lineage, implementation-plan. Checks observados: `uv run pytest -q` 58 passed;
+  `npm run lint` sin advertencias; `npm run build` ok. Sin prueba RED: el frontend no tiene runner de pruebas.
+- Brechas del backend detectadas (sin corregir, fuera del alcance de writer B): con `sequence_id`, preguntas no
+  reconocidas reciben la descripción de la secuencia en lugar de `not_available`; la búsqueda por palabras clave
+  responde a preguntas fuera de alcance ("color favorito de la tripulación" → F-urban2019-014).
