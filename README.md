@@ -71,6 +71,7 @@ advertencia.
 uv sync
 uv run python -m pipeline.build_catalog --raw descompressed     # 21 secuencias, 69.380 fotogramas
 uv run python -m pipeline.compute_metrics --raw descompressed   # 1 de cada 5 fotogramas (+ posteriores a huecos y el último)
+uv run python -m pipeline.build_inventory                       # inventario archivo por archivo → docs/data-inventory.csv
 ```
 
 ## Ejecutar

@@ -31,4 +31,9 @@ data/processed/* + references JSON ──► backend/app.py (FastAPI) ──► 
 ```
 uv run python -m pipeline.build_catalog --raw descompressed
 uv run python -m pipeline.compute_metrics --raw descompressed --step 5
+uv run python -m pipeline.build_inventory   # solo lectura de descompressed/ → docs/data-inventory.csv
 ```
+
+Inventario archivo por archivo de `descompressed/` (tipo por firma, cabeceras de imagen, documentos, roles y
+muestra/material solo con cita documental): `docs/data-inventory.csv`, generado por `pipeline/build_inventory.py`;
+leyenda y auditoría en `docs/data-audit.md`.
