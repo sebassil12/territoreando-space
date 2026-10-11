@@ -58,3 +58,12 @@ PRs encadenados se decide al abrir PR.
 - Brechas del backend detectadas (sin corregir, fuera del alcance de writer B): con `sequence_id`, preguntas no
   reconocidas reciben la descripción de la secuencia en lugar de `not_available`; la búsqueda por palabras clave
   responde a preguntas fuera de alcance ("color favorito de la tripulación" → F-urban2019-014).
+- T3 (verificador independiente, solo lectura): 24/24 hallazgos PASS (1 MINOR: Fig. 13 en p.179). Corregidas citas
+  p.180→p.181 de S9 en `scientific_reference_results.json` y `docs/data-audit.md` (commit d221896).
+- T4/T5 en e0569f3. Corrección del asistente (fuera de tema / contexto de secuencia → not_available) test-first:
+  RED 8 fallos → GREEN; `uv run pytest -q` 76 passed (commit abe219f).
+- `docs/data-inventory.csv` añadido a `.gitignore` (regenerable).
+- RDD: assess → medium, `slice_budget_reached` (3 936 líneas, 41 rutas). Preflight STATUS bloqueado en
+  `intended_untracked_selection_required` (`.atl/` ajeno al cambio); pendiente de decisión del usuario.
+- Pendiente: respuestas del asistente parcialmente en inglés; prueba manual en navegador (puerto 8000 ocupado por
+  backend antiguo); refactor de deuda `create_app`/`build`.
