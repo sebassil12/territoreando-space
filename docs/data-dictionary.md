@@ -6,7 +6,7 @@ Todos los archivos los genera `pipeline/` en `data/processed/`. Cada fila incluy
 | Columna | Significado |
 |---|---|
 | sequence_id | `{group}-{camera}-{variant}-{format}-{partN or single}`, p. ej. `S1-C2-raw-jpeg-part1` |
-| group, camera | etiquetas de carpeta del inventario (significado **no documentado**) |
+| group, camera | etiquetas de carpeta del inventario; SnCm = muestra n, cámara m; F1/F2 = pre/post-flow (DoD Tabla 2) |
 | file_type | etiqueta del inventario: Raw JPEG, Mapped JPEG, ICMAD PNG, Mapped TIFF, BIT |
 | processing_variant | raw, mapped, icmad, bit |
 | part | número de parte en el nombre de la carpeta; vacío si no hay |
@@ -56,3 +56,55 @@ omiten cuando ningún píxel alcanza el umbral.
 
 ## scientific_reference_results.json
 Valores transcritos de urban2019 con números de página. Etiqueta: *Referencia publicada* (*Published reference*).
+
+## findings.json — hallazgos transcritos a mano (`data/processed/findings.json`)
+Validados al cargar por `backend/findings.py`; un hallazgo inválido se excluye con advertencia.
+
+| Campo | Significado |
+|---|---|
+| finding_id | estable: `F-urban2019-NNN`, `F-dod-NNN`, `F-data-NNN` |
+| title, summary, observation | texto en español, fiel a la fuente; `observation` lleva los valores citados |
+| experiment, sample, material, condition | según la fuente; `sample` = "1"…"9" solo si la fuente nombra la muestra; desconocido → null |
+| theme | flame_spread, flame_length_limit, test_conditions, scale_and_generalization, image_interpretation, data_provenance, data_coverage, calibration |
+| metric, value, unit | `value` numérico solo con `unit` y con evidence_type `published_result` o `instrument_measurement` |
+| evidence_type | published_result, instrument_measurement, image_observation, derived_metric, data_quality_note (la interpretación nunca se guarda aquí) |
+| source_path, source_location, source_quote | archivo (en `descompressed/` o documentado en `docs/sources.md`), página/tabla/sección y cita textual en inglés |
+| confidence + confidence_rationale | high / medium / low (criterios abajo) |
+| safety_relevance + safety_relevance_rationale | high / medium / low (criterios abajo); nunca predicción de riesgo |
+| limitations | lista de textos |
+| related_sequences | `sequence_id` de la misma muestra según DoD Tabla 2; nunca mezcla variantes del mismo canal; vacío si no hay mapeo |
+| data_status | complete, partial, conflicting, unknown |
+| reference_id | id relacionado en `scientific_reference_results.json`, o null |
+
+Criterios de **confidence** (respaldo que la fuente da a la afirmación):
+- `high`: valor o afirmación explícita de la fuente, medida en vuelo o leída textualmente de un documento.
+- `medium`: atribuida a modelado, valor aproximado ("about", "appears"), transcripción visual de una tabla-imagen o
+  cálculo del equipo sobre archivos locales.
+- `low`: fuentes en conflicto o afirmación incierta.
+
+Criterios de **safety_relevance** (según la fuente, no predicción):
+- `high`: la fuente vincula la afirmación con la seguridad contra incendios en naves (p. ej. urban2019 p.168, p.181).
+- `medium`: la fuente la sitúa en condiciones representativas de una nave (flujo "typical of air circulation speeds
+  in a spacecraft", p.168) o en material relevante para la tripulación (p.173), sin vínculo explícito con seguridad.
+- `low`: método, procedencia o calidad de datos; sin vínculo citado con la seguridad.
+
+**Ranking** (`GET /api/findings/ranked`, reglas en `backend/analysis.py::RANKING_RULES`): puntaje = safety_relevance
+(3/2/1) + confidence (3/2/1) + evidence_type (published/instrument 2, image/derived 1, data_quality_note 0) +
+data_status (complete 0, partial −1, conflicting/unknown −2). Desempate: puntaje, safety_relevance, confidence,
+finding_id. Cada fila trae `score_breakdown`. Es un orden de lectura, no una probabilidad ni un riesgo.
+
+## sample_conditions.csv — condiciones por muestra (`data/processed/sample_conditions.csv`)
+| Columna | Significado |
+|---|---|
+| sample, folder_label, psi_record_meaning | "1"…"9", "F1", "F2"; etiqueta de carpeta; descripción del registro PSI (DoD Tabla 2) |
+| material, thickness_mm, igniter_position | DoD Tabla 1 (imagen, transcripción visual) |
+| airflow_cm_s_dod, airflow_cm_s_urban2019, airflow_status | flujo por fuente; `airflow_status` = consistent, conflicting, single_source |
+| oxygen_pct, pressure_atm | solo donde urban2019 lo reporta por muestra (5 y 6; presión solo 5); vacío si no |
+| dimensions_cm | "5 x 29" (DoD, texto; urban2019 p.173) |
+| jpeg_received, jpeg_local | JPEG recibidos (xlsx `Received - jpeg`) y presentes localmente (`docs/data-audit.md`, H7) |
+| local_sequences | `sequence_id` locales de la muestra (sin BIT), separados por `;` |
+| source_path, source_location, confidence, notes | cita de la fila; confidence high si urban2019 confirma el material |
+
+`GET /api/compare` usa `material`, `thickness_mm`, `airflow_cm_s` (null si las fuentes se contradicen),
+`igniter_position`, `oxygen_pct` y `pressure_atm`; `comparison_status = limited` si algún factor difiere, falta o
+está en conflicto.

@@ -44,7 +44,11 @@ asistente determinista). Ver `docs/gap-analysis.md` y `docs/implementation-plan.
    `data/scientific_reference_results.json` y se etiquetan como **Referencia publicada** (*Published reference*).
 3. Mantener separadas las categorías: dato observado · métrica derivada de imagen · resultado publicado · interpretación.
 4. Nunca inferir temperatura, tasa de liberación de calor, riesgo de incendio, oxígeno ni material a partir de píxeles.
-5. `S1…S9`, `F1`, `F2` son etiquetas de carpeta, no números de muestra. `C1`/`C2` como cámaras es una *interpretación candidata*.
+5. Identidad de carpetas según `descompressed/SAFFIRE-II DoD.docx` Tabla 2 y texto tras la Figura 1: `S1…S9` → muestras
+   1–9, `C1`/`C2` → cámara 1 / cámara 2, `F1`/`F2` → pre-flow / post-flow (vínculo carpeta→registro PSI por etiqueta
+   compartida). El material por muestra viene de la Tabla 1 del DoD (imagen; confianza media), contrastado con
+   urban2019 donde lo confirma (muestras 5, 6 y 9). Las carpetas `BIT` son imágenes de autoprueba (DoD Tabla 4), nunca
+   quemas de muestra. Ningún material ni condición se infiere de píxeles ni de nombres fuera de este mapeo.
 6. Nunca concatenar series Raw / Mapped / ICMAD / BIT / TIFF. Misma ventana temporal ⇒ `processing_variant`.
 7. Las secuencias con huecos > 2× el intervalo mediano son `gap_detected` y no aptas para calcular tasas.
 8. `calibration_status` nunca se fija en `validated` automáticamente. Ninguna salida en mm/cm sin un mapeo documentado y validado.
@@ -78,7 +82,8 @@ descompressed/ (raw, read-only, git-ignored)
    ▼
 pipeline/  ── offline, CLI ──►  data/processed/*.csv                    (evidence layer, committed)
                                 data/scientific_reference_results.json  (hand-transcribed, cited)
-                                data/findings.json                      (planned: findings layer)
+                                data/processed/findings.json            (findings layer, hand-transcribed)
+                                data/processed/sample_conditions.csv    (cited conditions per sample)
    │
    ▼
 backend/   FastAPI, loads CSV/JSON into memory at startup ── /api/*
@@ -91,10 +96,10 @@ frontend/  React + TS + Vite + Tailwind v4, calls /api via Vite proxy
 |---|---|---|---|
 | Evidencia | `pipeline/build_catalog.py` | inventario → catálogos de secuencias / fotogramas / calibración | funciones puras (`interval_stats`, `assign_roles`, `temporal_quality`) con pruebas unitarias |
 | Evidencia | `pipeline/compute_metrics.py` | estadísticas de píxeles por fotograma → `frame_metrics.csv` | solo píxeles / intensidad de 8 bits |
-| Hallazgos | `data/findings.json` | **planificado**: hallazgos transcritos a mano con cita (archivo + página) | ver `docs/implementation-plan.md` |
+| Hallazgos | `data/processed/findings.json`, `sample_conditions.csv` | hallazgos y condiciones transcritos a mano con cita | validados por `backend/findings.py` al cargar |
 | API | `backend/app.py` | fábrica `create_app(processed, raw, references)` + rutas | toda respuesta JSON = `{data, source, warnings, quality}` |
-| API | rutas `/api/findings*` | **planificado**: listado jerarquizado, detalle, evidencia, comparación | no existen aún |
-| API | `backend/assistant.py` | preguntas y respuestas deterministas, basadas en fuentes | sin LLM; rechaza la inferencia física |
+| API | `backend/routes/findings.py`, `backend/analysis.py` | `/api/findings`, `/api/findings/ranked`, `/api/findings/{id}`, `/api/conditions`, `/api/compare` | ranking por reglas con desglose; comparación sin conclusiones |
+| API | `backend/assistant.py` | preguntas y respuestas deterministas sobre hallazgos y catálogos | sin LLM; cita IDs de hallazgo; rechaza la inferencia física |
 | UI | `frontend/src/App.tsx` | estructura, pestañas, resumen, catálogo, ciencia, asistente, limitaciones | enlaces directos por hash `#Viewer/<sequence_id>` |
 | UI | `frontend/src/Viewer.tsx` | reproductor, procedencia, detalle del fotograma, gráfico de métricas (SVG simple) | el gráfico corta la línea en los huecos temporales |
 | UI | `frontend/src/ui.tsx` | componentes de presentación reutilizables | sin llamadas a la API |
@@ -152,7 +157,8 @@ Aplica a todo código nuevo o modificado. El código existente se ajusta cuando 
 ### Pruebas
 - Toda lógica nueva incluye una prueba focalizada que falla si la lógica se rompe.
 - Las pruebas del pipeline construyen inventarios sintéticos en `tmp_path`; las de la API usan los catálogos versionados.
-- Todo hallazgo nuevo en `data/findings.json` debe pasar la validación de citas (cuando exista, ver backlog P0-2).
+- Todo hallazgo nuevo en `data/processed/findings.json` debe pasar la validación de `backend/findings.py`
+  (`tests/test_findings.py`).
 
 ## 5. Comandos
 

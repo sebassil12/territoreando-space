@@ -18,6 +18,9 @@ from PIL import Image
 from pydantic import BaseModel
 
 from backend import assistant
+from backend.envelope import envelope
+from backend.findings import load_store
+from backend.routes.findings import build_findings_router
 
 ROOT = Path(__file__).resolve().parent.parent
 PROCESSED = ROOT / "data" / "processed"
@@ -38,8 +41,14 @@ INVESTIGATION = {
 }
 
 
-def envelope(data, source, warnings=None, quality="ok"):
-    return {"data": data, "source": source, "warnings": warnings or [], "quality": quality}
+# Documentos de descompressed/ que respaldan hallazgos y condiciones (ver docs/sources.md).
+SOURCE_DOCUMENTS = (
+    ("dod", "SAFFIRE-II DoD.docx", "data description: sample/camera/flow mapping (Table 2), samples (Table 1)"),
+    ("nomenclature", "SAFFIRE-II_Image_Directory_Nomenclature_v3.0.pdf", "image set nomenclature"),
+    ("merge_result", "SAFFIRE-II_MergeResult-jpeg_v5_Final.xlsx", "received JPEG manifest"),
+    ("co2_plot", "SaffireIIStitchedCO2V7.pdf", "CO2 plot (raster, context only)"),
+    ("tm_graphs", "Saffire-II Sample 1 TM Graphs.docx", "Sample 1 telemetry plots (raster, context only)"),
+)
 
 
 def _typed(row: dict) -> dict:
@@ -72,13 +81,14 @@ def sequence_warnings(seq: dict, primary_of: dict, calibration_status: str) -> l
         w.append(f"Processing variant of the same acquisition window as {primary_of.get(seq['sequence_id'], 'another sequence')}. "
                  "Do not concatenate with it as extra frames.")
     if seq["sequence_role"] == "bit_sequence":
-        w.append("The meaning of 'BIT' is not documented in the loaded sources.")
+        w.append("BIT = Built-In Test images captured right after payload power-on (SAFFIRE-II DoD.docx, Table 4); "
+                 "not a sample burn.")
     if seq["group"].startswith("F"):
-        w.append("The meaning of group prefix 'F' is not documented in the loaded sources.")
+        w.append("F1 = pre-flow, F2 = post-flow (SAFFIRE-II DoD.docx, text after Figure 1); not a sample.")
     if calibration_status != "validated":
         w.append(f"Spatial calibration {calibration_status}: measurements shown in pixels only.")
-    w.append(f"'{seq['group']}' is a folder label; it is not proven to be a Saffire-2 sample number. "
-             f"'{seq['camera']}' as camera channel is a candidate interpretation.")
+    w.append(f"'{seq['group']}{seq['camera']}' matches the PSI record of the same label (SAFFIRE-II DoD.docx, Table 2: "
+             "SnCm = sample n, camera m); the folder-to-record link is by shared label.")
     return w
 
 
@@ -116,9 +126,13 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
     def seq_view(s: dict) -> dict:
         return {**s, "calibration_status": cal_status(s["sequence_id"]), "primary_sequence_id": primary_of.get(s["sequence_id"])}
 
-    ctx = assistant.Context(sequences, frames_by_seq, metrics_by_seq, refs, cal_status, primary_of)
+    store = load_store(processed, raw, sequences,
+                       lambda sid: sequence_warnings(sequences[sid], primary_of, cal_status(sid)))
+    ctx = assistant.Context(sequences, frames_by_seq, metrics_by_seq, refs, cal_status, primary_of,
+                            store.findings, store.conditions)
 
     app = FastAPI(title="Flame in Freefall API")
+    app.include_router(build_findings_router(store))
 
     @app.get("/api/health")
     def health():
@@ -205,6 +219,9 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
             {"id": "urban2019", "file": "descompressed/urban2019.pdf", "kind": "peer-reviewed paper",
              "citation": refs.get("sources", {}).get("urban2019", {}).get("citation"), "available": (raw / "urban2019.pdf").is_file()},
             {"id": "scientific_reference_results", "file": "data/scientific_reference_results.json", "kind": "values transcribed from urban2019", "available": references.is_file()},
+            *[{"id": sid, "file": f"descompressed/{name}", "kind": kind, "available": (raw / name).is_file()}
+              for sid, name, kind in SOURCE_DOCUMENTS],
+            {"id": "findings", "file": "data/processed/findings.json", "kind": "hand-transcribed findings with citations", "available": (processed / "findings.json").is_file()},
         ]
         missing = ["i_Investigation.txt", "s_PSI-99-2.txt"]
         return envelope(listed, "project", [f"Not in loaded sources: {m}" for m in missing])
