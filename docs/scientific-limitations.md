@@ -1,26 +1,29 @@
-# Scientific limitations
+# Limitaciones científicas
 
-What the dashboard **cannot** conclude, and why.
+Lo que el dashboard **no puede** concluir, y por qué.
 
-| Claim | Status | Reason |
+| Afirmación | Estado | Motivo |
 |---|---|---|
-| Flame temperature, heat-release rate | Not available | Images have no radiometric calibration. Brightness ≠ temperature. |
-| Fire risk for a material or spacecraft | Not available | Published results apply only to their tested conditions (urban2019 §6, finding 6). |
-| Oxygen concentration from images | Not available | Test conditions come only from the paper. |
-| Which sample/material a folder shows | Not available | No loaded source maps S1…S9 / F1 / F2 to Saffire-2 sample numbers. |
-| C1 / C2 = camera 1 / camera 2 | Candidate interpretation | Plausible (paper: two cameras) but not documented. |
-| Lengths in mm / cm, spread rates | Not available | Distortion grids exist (30 mm block) but no pixel→mm mapping is validated. |
-| Rates from Mapped TIFF series | Not suitable | Gaps up to 183 s; median interval 167 ms (not 33 ms). |
-| Meaning of "BIT", "ICMAD", "F" groups | Unknown | Not documented in loaded sources. |
+| Temperatura de la llama, tasa de liberación de calor | No disponible | Las imágenes no tienen calibración radiométrica. Brillo ≠ temperatura. |
+| Riesgo de incendio de un material o una nave | No disponible | Los resultados publicados se aplican solo a sus condiciones de ensayo (urban2019 §6, hallazgo 6). |
+| Concentración de oxígeno a partir de imágenes | No disponible | Las condiciones de ensayo provienen solo del artículo. |
+| Qué muestra/material contiene una carpeta | No disponible | Ninguna fuente cargada relaciona S1…S9 / F1 / F2 con números de muestra de Saffire-2. |
+| C1 / C2 = cámara 1 / cámara 2 | Interpretación candidata | Plausible (el artículo menciona dos cámaras) pero no documentado. |
+| Longitudes en mm / cm, tasas de propagación | No disponible | Existen rejillas de distorsión (bloque de 30 mm), pero ningún mapeo píxel→mm está validado. |
+| Tasas a partir de series Mapped TIFF | No apto | Huecos de hasta 183 s; intervalo mediano de 167 ms (no 33 ms). |
+| Significado de "BIT", "ICMAD", grupos "F" | Desconocido | No documentado en las fuentes cargadas. |
 
-## Known artefacts that affect pixel metrics
-- **Green LED illumination** for 0.4 s every 2 s (urban2019 p.173) lights the whole sample; brightness spikes are
-  often illumination, not flame.
-- **Burned-in text banner** in TIFF frames (file name, acquisition count, exposure, gain) adds bright pixels.
-- **Processing variants** (raw / mapped / ICMAD) have different geometry and contrast; their metrics are not comparable.
-- **Fixed threshold (128)** is a heuristic, not tuned per sequence.
-- **Sampling** every 5th frame (~6 fps for 30 fps data) can alias the 2 s LED cycle.
+## Artefactos conocidos que afectan las métricas de píxeles
+- **Iluminación con LED verde** durante 0,4 s cada 2 s (urban2019 p.173) ilumina toda la muestra; los picos de brillo
+  suelen ser iluminación, no llama.
+- **Banda de texto incrustada** en los fotogramas TIFF (nombre de archivo, contador de adquisición, exposición,
+  ganancia) agrega píxeles brillantes.
+- **Variantes de procesamiento** (raw / mapped / ICMAD) tienen distinta geometría y contraste; sus métricas no son
+  comparables.
+- **Umbral fijo (128)** es una heurística, no ajustada por secuencia.
+- **Muestreo** de uno de cada 5 fotogramas (~6 fps para datos de 30 fps) puede producir aliasing con el ciclo de 2 s
+  del LED.
 
-## Published reference values
-Shown in the *Scientific context* view, labeled *Published reference*, with page numbers. They are **not** computed by
-the dashboard and not linked to an image sequence.
+## Valores de referencia publicados
+Se muestran en la vista *Contexto científico*, etiquetados como *Referencia publicada*, con números de página. El
+dashboard **no** los calcula y no están vinculados a ninguna secuencia de imágenes.

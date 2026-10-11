@@ -1,8 +1,8 @@
-"""Deterministic, source-grounded explanation layer (no LLM).
+"""Capa de explicación determinista y basada en fuentes (sin LLM).
 
-Answers are built only from the catalogs and the transcribed references. Every answer has
-Observation / Interpretation / Evidence / Limitations. Unknown questions get
-"Not available in the loaded sources." instead of a guess.
+Las respuestas se construyen solo a partir de los catálogos y las referencias transcritas. Toda respuesta tiene
+Observation / Interpretation / Evidence / Limitations. Las preguntas desconocidas reciben
+"Not available in the loaded sources." en lugar de una suposición.
 """
 
 import re
@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 NOT_AVAILABLE = "Not available in the loaded sources."
 
-# Questions asking for quantities the images cannot provide. Checked first.
+# Preguntas que piden magnitudes que las imágenes no pueden aportar. Se comprueban primero.
 FORBIDDEN = {
     "temperature": r"temperat|\bheat\b|calor|hrr|heat.release",
     "risk": r"\brisk|riesgo|danger|peligro|safe to",
@@ -132,7 +132,7 @@ def answer(ctx: Context, question: str, sequence_id: str | None = None) -> dict:
     if not q:
         return _not_available("Empty question.")
     seq = ctx.sequences.get(sequence_id) if sequence_id else None
-    if seq is None:  # allow mentioning the id in the question
+    if seq is None:  # permite mencionar el id en la pregunta
         seq = next((s for sid, s in ctx.sequences.items() if sid.lower() in q), None)
 
     for kind, pattern in FORBIDDEN.items():

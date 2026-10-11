@@ -1,4 +1,4 @@
-"""API tests against the generated catalogs (run pipeline.build_catalog first)."""
+"""Pruebas de la API contra los catálogos generados (ejecutar antes pipeline.build_catalog)."""
 
 from pathlib import Path
 
@@ -75,7 +75,7 @@ def test_references_all_have_source(client):
 
 
 def test_missing_image_returns_warning_not_crash(tmp_path):
-    c = TestClient(create_app(raw=tmp_path))  # empty raw dir: every image missing
+    c = TestClient(create_app(raw=tmp_path))  # carpeta raw vacía: todas las imágenes faltan
     body = c.get("/api/frames/S1-C2-raw-jpeg-part1-f00000").json()
     assert body["data"]["image_available"] is False
     assert any("not found" in w for w in body["warnings"])

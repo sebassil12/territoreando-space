@@ -1,14 +1,14 @@
-"""Build normalized catalogs from the SAFFIRE-II inventory.
+"""Construye catálogos normalizados a partir del inventario de SAFFIRE-II.
 
-Inputs (read-only, never modified):
+Entradas (solo lectura, nunca se modifican):
     <raw>/saffire_inventory.csv
-    <raw>/continuidad_series.csv   (cross-check only)
-Outputs:
+    <raw>/continuidad_series.csv   (solo para contraste)
+Salidas:
     data/processed/sequence_catalog.csv
     data/processed/frame_catalog.csv
     data/processed/calibration_catalog.csv
 
-Usage: uv run python -m pipeline.build_catalog [--raw descompressed]
+Uso: uv run python -m pipeline.build_catalog [--raw descompressed]
 """
 
 import argparse
@@ -22,7 +22,7 @@ from pathlib import Path
 INVENTORY = "saffire_inventory.csv"
 OUT = Path("data/processed")
 
-# file_type label in inventory -> (container format, processing variant)
+# etiqueta file_type del inventario -> (formato contenedor, variante de procesamiento)
 FILE_TYPES = {
     "Raw JPEG": ("jpeg", "raw"),
     "Mapped JPEG": ("jpeg", "mapped"),
@@ -30,8 +30,8 @@ FILE_TYPES = {
     "Mapped TIFF": ("tiff", "mapped"),
     "BIT": ("jpeg", "bit"),
 }
-# When several variants cover the same time range, the first one found here is the
-# primary sequence; the others are flagged as processing variants (not extra frames).
+# Cuando varias variantes cubren el mismo rango temporal, la primera que aparece aquí es la
+# secuencia primaria; las demás se marcan como variantes de procesamiento (no fotogramas extra).
 PRIMARY_PREFERENCE = ["Raw JPEG", "Mapped JPEG", "ICMAD PNG", "Mapped TIFF"]
 
 SEQUENCE_COLUMNS = [
@@ -53,14 +53,14 @@ CALIBRATION_COLUMNS = [
 def sequence_id(group: str, camera: str, file_type: str, part: str, folder: str) -> str:
     variant = FILE_TYPES[file_type][1]
     if "ICMAD" in folder.upper() and variant != "icmad":
-        variant += "-icmad"  # e.g. Mapped TIFF processed with ICMAD (S6C1 v2)
+        variant += "-icmad"  # p. ej. Mapped TIFF procesado con ICMAD (S6C1 v2)
     fmt = FILE_TYPES[file_type][0]
     part_slug = f"part{part}" if part.isdigit() else "single"
     return f"{group}-{camera}-{variant}-{fmt}-{part_slug}"
 
 
 def interval_stats(raw_ids: list[int]) -> dict:
-    """Temporal statistics of a raw_id-sorted list. raw_id is treated as milliseconds."""
+    """Estadísticas temporales de una lista ordenada por raw_id. raw_id se trata como milisegundos."""
     ids = sorted(raw_ids)
     diffs = [b - a for a, b in itertools.pairwise(ids)]
     positive = [d for d in diffs if d > 0]
@@ -78,7 +78,7 @@ def interval_stats(raw_ids: list[int]) -> dict:
 
 
 def gap_positions(raw_ids: list[int], median_ms: float) -> dict[int, float]:
-    """Map frame_index -> gap size in seconds for frames that follow a gap > 2x median."""
+    """Mapea frame_index -> tamaño del hueco en segundos para los fotogramas que siguen a un hueco > 2x la mediana."""
     return {
         i: (b - a) / 1000
         for i, (a, b) in enumerate(itertools.pairwise(raw_ids), start=1)
@@ -87,10 +87,10 @@ def gap_positions(raw_ids: list[int], median_ms: float) -> dict[int, float]:
 
 
 def assign_roles(sequences: list[dict]) -> None:
-    """Set sequence_role in place: primary / processing_variant / bit_sequence.
+    """Fija sequence_role en el lugar: primary / processing_variant / bit_sequence.
 
-    Sequences of the same group+camera whose raw_id ranges overlap describe the same
-    acquisition window; only one of them is primary.
+    Las secuencias del mismo group+camera cuyos rangos de raw_id se superponen describen la misma
+    ventana de adquisición; solo una de ellas es primaria.
     """
     by_key = defaultdict(list)
     for s in sequences:
@@ -152,7 +152,7 @@ def build(raw_root: Path, out: Path = OUT) -> dict:
     sequences, frames_by_seq = [], {}
     for folder, items in by_folder.items():
         first = items[0]
-        items.sort(key=lambda r: int(r["raw_id"]))  # raw_id is the temporal ordering field
+        items.sort(key=lambda r: int(r["raw_id"]))  # raw_id es el campo de ordenamiento temporal
         ids = [int(r["raw_id"]) for r in items]
         sid = sequence_id(first["group"], first["camera"], first["file_type"], first["part"], folder)
         grid = grid_by_gc.get((first["group"], first["camera"]))
@@ -216,7 +216,7 @@ def build(raw_root: Path, out: Path = OUT) -> dict:
                 "sequence_id": sid,
                 "calibration_file": path,
                 "reference_length_mm": ref,
-                # ponytail: never 'validated' automatically; flip only after a documented, checked mapping.
+                # ponytail: nunca 'validated' automáticamente; cambiar solo tras un mapeo documentado y comprobado.
                 "calibration_status": "pending" if found else "unavailable",
                 "source_file": INVENTORY,
                 "notes": notes + ("" if sid else " No image sequence for this group/camera in the inventory."),
@@ -230,7 +230,7 @@ def build(raw_root: Path, out: Path = OUT) -> dict:
 
 
 def cross_check(raw_root: Path, sequences: list[dict]) -> list[str]:
-    """Compare our stats with continuidad_series.csv; return human-readable mismatches."""
+    """Compara nuestras estadísticas con continuidad_series.csv; devuelve las discrepancias en texto legible."""
     path = raw_root / "continuidad_series.csv"
     if not path.is_file():
         return ["continuidad_series.csv not found; cross-check skipped"]

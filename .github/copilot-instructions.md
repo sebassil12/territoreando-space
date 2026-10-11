@@ -1,3 +1,3 @@
-# Copilot instructions
+# Instrucciones para Copilot
 
-Follow [AGENTS.md](../AGENTS.md): architecture, commands, scientific rules and conventions for this repository.
+Siga [AGENTS.md](../AGENTS.md): arquitectura, comandos, reglas científicas y convenciones de este repositorio.

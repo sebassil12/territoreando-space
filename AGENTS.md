@@ -1,15 +1,21 @@
 # AGENTS.md
 
-Instructions for AI coding agents (Claude Code, Codex, Copilot, Cursor, Gemini, …) working in this repository.
-Humans: this is also the shortest accurate description of the system.
+Instrucciones para agentes de código de IA (Claude Code, Codex) que trabajan en este repositorio.
+Para personas: esta es también la descripción precisa más breve del sistema.
 
-## Mission
-Evidence-exploration dashboard for NASA Saffire-II microgravity combustion data (Space Apps 2026, *Flame in Freefall*).
-It must make experimental data **understandable and traceable** — never more certain than the sources allow.
+## Misión
 
-## Architecture
+Construir un dashboard interactivo con IA que resuma, rankee e interprete hallazgos de combustión en microgravedad a partir de los datos y la investigación de SAFFIRE-II / PSI-99 de la NASA, para el reto *Flame in Freefall* de NASA Space Apps 2026.
 
-Data flows one way. Each layer only reads the layer to its left.
+El objetivo es convertir evidencia científica dispersa en insights claros, jerarquizados y trazables sobre seguridad contra incendios en vuelos espaciales tripulados.
+
+Las imágenes, secuencias y archivos son evidencia de respaldo; el producto central son los hallazgos, su relevancia, su confiabilidad y su interpretación.
+
+El dashboard no es un visor de imágenes, un simulador CFD ni un predictor universal de incendios. Cada afirmación debe citar su fuente y distinguir entre resultado publicado, dato observado, métrica derivada, interpretación por IA y limitación.
+
+## Arquitectura
+
+Los datos fluyen en un solo sentido. Cada capa solo lee la capa a su izquierda.
 
 ```
 descompressed/ (raw, read-only, git-ignored)
@@ -25,21 +31,22 @@ backend/   FastAPI, loads CSV/JSON into memory at startup ── /api/*
 frontend/  React + TS + Vite + Tailwind v4, calls /api via Vite proxy
 ```
 
-| Path | Responsibility | Notes |
+| Ruta | Responsabilidad | Notas |
 |---|---|---|
-| `pipeline/build_catalog.py` | inventory → sequence / frame / calibration catalogs | pure helpers (`interval_stats`, `assign_roles`, `temporal_quality`) are unit-tested |
-| `pipeline/compute_metrics.py` | per-frame pixel statistics → `frame_metrics.csv` | pixels / 8-bit intensity only |
-| `backend/app.py` | `create_app(processed, raw, references)` factory + routes | every JSON response = `{data, source, warnings, quality}` |
-| `backend/assistant.py` | deterministic, source-grounded Q&A | no LLM; refuses physical inference |
-| `frontend/src/App.tsx` | shell, tabs, overview, catalog, science, assistant, limitations | hash deep links `#Viewer/<sequence_id>` |
-| `frontend/src/Viewer.tsx` | player, provenance, frame detail, metric chart (plain SVG) | chart breaks the line at temporal gaps |
-| `frontend/src/api.ts` | types + fetch helpers | mirror backend shapes here |
-| `tests/` | pytest: pipeline (synthetic data), API, assistant | API tests use the committed catalogs |
-| `docs/` | context, data dictionary, lineage, limitations, demo, plan | update when behavior changes |
+| `pipeline/build_catalog.py` | inventario → catálogos de secuencias / fotogramas / calibración | las funciones puras (`interval_stats`, `assign_roles`, `temporal_quality`) tienen pruebas unitarias |
+| `pipeline/compute_metrics.py` | estadísticas de píxeles por fotograma → `frame_metrics.csv` | solo píxeles / intensidad de 8 bits |
+| `backend/app.py` | fábrica `create_app(processed, raw, references)` + rutas | toda respuesta JSON = `{data, source, warnings, quality}` |
+| `backend/assistant.py` | preguntas y respuestas deterministas, basadas en fuentes | sin LLM; rechaza la inferencia física |
+| `frontend/src/App.tsx` | estructura, pestañas, resumen, catálogo, ciencia, asistente, limitaciones | enlaces directos por hash `#Viewer/<sequence_id>` |
+| `frontend/src/Viewer.tsx` | reproductor, procedencia, detalle del fotograma, gráfico de métricas (SVG simple) | el gráfico corta la línea en los huecos temporales |
+| `frontend/src/i18n.tsx` | locale de la UI: diccionarios `es` / `en`, `I18nProvider`, `useT()` | `es` por defecto; todo texto visible pasa por `t('...')` |
+| `frontend/src/api.ts` | tipos + funciones de consulta | refleja aquí las formas del backend |
+| `tests/` | pytest: pipeline (datos sintéticos), API, asistente | las pruebas de la API usan los catálogos versionados |
+| `docs/` | contexto, diccionario de datos, linaje, limitaciones, demo, plan | actualizar cuando cambie el comportamiento |
 
-No database, no queue, no microservices. Keep it that way unless a measured need appears.
+Sin base de datos, sin colas, sin microservicios. Mantenerlo así salvo que aparezca una necesidad medida.
 
-## Commands
+## Comandos
 
 ```bash
 uv sync                                              # Python deps
@@ -53,38 +60,39 @@ uv run ruff check pipeline backend tests             # must pass
 cd frontend && npm run lint && npm run build         # must pass
 ```
 
-Run all three checks before declaring a task done.
+Ejecute los tres checks antes de dar una tarea por terminada.
 
-## Scientific rules (non-negotiable)
-1. Do not invent aerospace facts, physical values, equations, sample or material assignments.
-2. Every scientific statement in the UI or API cites a source (file + page). Published values live only in
-   `data/scientific_reference_results.json` and are labeled **Published reference**.
-3. Keep categories separate: observed data · derived image metric · published result · interpretation.
-4. Never infer temperature, heat-release rate, fire risk, oxygen or material from pixels.
-5. `S1…S9`, `F1`, `F2` are folder labels, not sample numbers. `C1`/`C2` as cameras is a *candidate interpretation*.
-6. Never concatenate Raw / Mapped / ICMAD / BIT / TIFF series. Same time window ⇒ `processing_variant`.
-7. Sequences with gaps > 2× median interval are `gap_detected` and unsuitable for rates.
-8. `calibration_status` is never set to `validated` automatically. No mm/cm output without a documented, validated mapping.
-9. Files under `descompressed/` are read-only.
-10. Missing files must produce warnings, never crashes.
+## Reglas científicas (no negociables)
+1. No inventar hechos aeroespaciales, valores físicos, ecuaciones ni asignaciones de muestras o materiales.
+2. Toda afirmación científica en la UI o la API cita una fuente (archivo + página). Los valores publicados viven solo en
+   `data/scientific_reference_results.json` y se etiquetan como **Referencia publicada** (*Published reference*).
+3. Mantener separadas las categorías: dato observado · métrica derivada de imagen · resultado publicado · interpretación.
+4. Nunca inferir temperatura, tasa de liberación de calor, riesgo de incendio, oxígeno ni material a partir de píxeles.
+5. `S1…S9`, `F1`, `F2` son etiquetas de carpeta, no números de muestra. `C1`/`C2` como cámaras es una *interpretación candidata*.
+6. Nunca concatenar series Raw / Mapped / ICMAD / BIT / TIFF. Misma ventana temporal ⇒ `processing_variant`.
+7. Las secuencias con huecos > 2× el intervalo mediano son `gap_detected` y no aptas para calcular tasas.
+8. `calibration_status` nunca se fija en `validated` automáticamente. Ninguna salida en mm/cm sin un mapeo documentado y validado.
+9. Los archivos bajo `descompressed/` son de solo lectura.
+10. Los archivos faltantes deben producir advertencias, nunca fallos.
 
-## Code conventions
-- English for code, comments, UI copy, docs and commits.
-- Python 3.11+, stdlib first; deps managed with `uv`. Ruff line length 110.
-- Prefer the smallest change that works; no new dependency for what a few lines can do.
-- Backend: add routes inside `create_app`; return `envelope(...)`; 404 for unknown IDs.
-- Frontend: Tailwind utility classes; shared bits in `ui.tsx`; keep types in `api.ts` in sync with the backend.
-- New logic ships with one focused test. Pipeline tests build synthetic inventories in `tmp_path`.
-- Charts: one series, one axis, units in labels, never draw across gaps.
+## Convenciones de código
+- Identificadores y mensajes de commit en inglés; comentarios, docstrings y documentación en español; el texto de la UI
+  pasa por el locale del frontend (`frontend/src/i18n.tsx`, `es` por defecto, `en` disponible).
+- Python 3.11+, primero la biblioteca estándar; dependencias gestionadas con `uv`. Longitud de línea de Ruff: 110.
+- Preferir el cambio más pequeño que funcione; ninguna dependencia nueva para lo que resuelven unas pocas líneas.
+- Backend: agregar rutas dentro de `create_app`; devolver `envelope(...)`; 404 para IDs desconocidos.
+- Frontend: clases utilitarias de Tailwind; piezas compartidas en `ui.tsx`; mantener los tipos de `api.ts` sincronizados con el backend.
+- Toda lógica nueva incluye una prueba focalizada. Las pruebas del pipeline construyen inventarios sintéticos en `tmp_path`.
+- Gráficos: una serie, un eje, unidades en las etiquetas, nunca dibujar a través de huecos.
 
-## Git workflow
-- Branch from `development`; open PRs into `development`. `main` receives reviewed releases only.
-- Conventional commits (`feat:`, `fix:`, `docs:`, `test:`, `chore:`) for regular work.
-- Never commit raw data (see `.gitignore`), secrets or `.env` files.
-- Do not push or open PRs unless a human asks.
+## Flujo de Git
+- Crear ramas desde `development`; abrir PRs hacia `development`. `main` solo recibe versiones revisadas.
+- Conventional commits (`feat:`, `fix:`, `docs:`, `test:`, `chore:`) para el trabajo habitual.
+- Nunca versionar datos crudos (ver `.gitignore`), secretos ni archivos `.env`.
+- No hacer push ni abrir PRs salvo que una persona lo pida.
 
-## Where to look first
-- What a column means → `docs/data-dictionary.md`
-- How a value was derived → `docs/data-lineage.md`
-- What we may not claim → `docs/scientific-limitations.md`
-- What is next → `docs/implementation-plan.md`
+## Dónde mirar primero
+- Qué significa una columna → `docs/data-dictionary.md`
+- Cómo se derivó un valor → `docs/data-lineage.md`
+- Qué no podemos afirmar → `docs/scientific-limitations.md`
+- Qué sigue → `docs/implementation-plan.md`

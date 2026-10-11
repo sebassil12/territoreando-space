@@ -1,8 +1,8 @@
-"""FastAPI backend serving the SAFFIRE-II evidence catalogs.
+"""Backend FastAPI que sirve los catálogos de evidencia de SAFFIRE-II.
 
-Every JSON response uses the same envelope: {data, source, warnings, quality}.
+Toda respuesta JSON usa el mismo envoltorio: {data, source, warnings, quality}.
 
-Run: uv run uvicorn backend.app:app --reload
+Ejecutar: uv run uvicorn backend.app:app --reload
 """
 
 import csv
@@ -96,7 +96,7 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
         metrics_by_seq[m["sequence_id"]].append(m)
     refs = json.loads(references.read_text(encoding="utf-8")) if references.is_file() else {"results": [], "facts": [], "sources": {}}
 
-    # primary sequence for each processing variant (same group/camera, overlapping range)
+    # secuencia primaria de cada variante de procesamiento (mismo group/camera, rango superpuesto)
     primary_of = {}
     for s in sequences.values():
         if s["sequence_role"] == "processing_variant":
@@ -183,7 +183,7 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
         path = raw / f["relative_path"]
         if not path.is_file():
             raise HTTPException(404, f"Image not available locally: {f['relative_path']}")
-        if path.suffix.lower() in {".tif", ".tiff"}:  # browsers cannot render TIFF
+        if path.suffix.lower() in {".tif", ".tiff"}:  # los navegadores no pueden mostrar TIFF
             buf = io.BytesIO()
             with Image.open(path) as im:
                 im.convert("RGB").save(buf, "PNG")

@@ -1,21 +1,21 @@
-# Demo script (≈4 min)
+# Guion de demo (≈4 min)
 
-Start both servers (README → Run) and open http://localhost:5173.
+Inicie ambos servidores (README → Ejecutar) y abra http://localhost:5173.
 
-1. **Overview** — "Saffire-II burned nine samples in orbit; flames in microgravity behave differently. This is an
-   evidence explorer, not a simulator." Point at the citations.
-2. **Sequences** — filter `temporal quality = gap detected`: the two Mapped TIFF series. Clear it; show
-   `S4-C1-mapped-jpeg-part2` marked as *processing variant of S4-C1-raw-jpeg-part2* — never merged.
-3. Click **S1-C2-raw-jpeg-part1** — badge *continuous*, 5000 frames, 166.6 s, median Δt 33 ms.
-4. **Play**, then pause. Show the provenance box: source, sequence, frame, raw_id, time, temporal quality.
-   Frame detail: original relative path, source file, warnings.
-5. **Analysis** — mean intensity vs. time. Point out periodic spikes and explain the green LED (0.4 s every 2 s,
-   urban2019 p.173). Click the chart to jump to that frame.
-6. Open `#Viewer/S6-C1-mapped-icmad-tiff-single` — gap warnings, broken line in the chart.
-7. **Scientific context** — Sample 5 spread rate 2.03 mm/s, Sample 9 PMMA limiting length ~9 cm, each with page.
-   "These are published, not computed by us."
-8. **Assistant** — ask "Is this sequence continuous?" then "What is the flame temperature?" → *Not available in the
-   loaded sources*, with the reason.
-9. **Sources & limitations** — what we can and cannot conclude; calibration *pending*.
+1. **Resumen** — "Saffire-II quemó nueve muestras en órbita; las llamas en microgravedad se comportan de forma distinta.
+   Esto es un explorador de evidencia, no un simulador." Señale las citas.
+2. **Secuencias** — filtre `calidad temporal = gap_detected`: las dos series Mapped TIFF. Quite el filtro; muestre
+   `S4-C1-mapped-jpeg-part2` marcada como *variante de procesamiento de S4-C1-raw-jpeg-part2*, nunca combinada.
+3. Haga clic en **S1-C2-raw-jpeg-part1** — insignia *continua*, 5000 fotogramas, 166,6 s, Δt mediano 33 ms.
+4. **Reproducir** y luego pausar. Muestre el recuadro de procedencia: fuente, secuencia, fotograma, raw_id, tiempo,
+   calidad temporal. Detalle del fotograma: ruta relativa original, archivo fuente, advertencias.
+5. **Análisis** — intensidad media vs. tiempo. Señale los picos periódicos y explique el LED verde (0,4 s cada 2 s,
+   urban2019 p.173). Haga clic en el gráfico para saltar a ese fotograma.
+6. Abra `#Viewer/S6-C1-mapped-icmad-tiff-single` — advertencias de huecos, línea cortada en el gráfico.
+7. **Contexto científico** — tasa de propagación de la Muestra 5: 2,03 mm/s; longitud límite del PMMA de la Muestra 9:
+   ~9 cm, cada una con su página. "Estos valores están publicados, no los calculamos nosotros."
+8. **Asistente** — pregunte "¿Esta secuencia es continua?" y luego "¿Cuál es la temperatura de la llama?" → *Not available
+   in the loaded sources*, con el motivo (las respuestas del asistente están en inglés).
+9. **Fuentes y limitaciones** — qué podemos y qué no podemos concluir; calibración *pending*.
 
-Closing line: "We turn hard-to-explore experiment data into traceable, honest evidence."
+Frase de cierre: "Convertimos datos experimentales difíciles de explorar en evidencia trazable y honesta."

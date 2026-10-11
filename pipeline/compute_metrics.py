@@ -1,9 +1,9 @@
-"""Compute simple image-derived metrics per frame.
+"""Calcula métricas simples derivadas de imagen por fotograma.
 
-These are pixel statistics, NOT physical flame measurements: no temperature, no length in
-mm, no heat-release rate. Units are 8-bit intensity, fractions or pixels.
+Son estadísticas de píxeles, NO mediciones físicas de la llama: ni temperatura, ni longitud en
+mm, ni tasa de liberación de calor. Las unidades son intensidad de 8 bits, fracciones o píxeles.
 
-Usage: uv run python -m pipeline.compute_metrics [--raw descompressed] [--step 5]
+Uso: uv run python -m pipeline.compute_metrics [--raw descompressed] [--step 5]
 """
 
 import argparse
@@ -16,13 +16,13 @@ from PIL import Image
 
 FRAMES = Path("data/processed/frame_catalog.csv")
 OUT = Path("data/processed/frame_metrics.csv")
-# ponytail: one fixed global threshold; per-variant/adaptive thresholds if comparisons need it.
+# ponytail: un único umbral global fijo; umbrales por variante/adaptativos si las comparaciones lo requieren.
 THRESHOLD = 128
 METHOD = "grayscale(PIL 'L') of the frame; bright = luminance >= threshold"
 COLUMNS = ["frame_id", "sequence_id", "metric_name", "value", "unit", "method", "threshold",
            "confidence", "source_file"]
 
-# metric -> (unit, confidence). Mean intensity is a direct statistic; the rest depend on THRESHOLD.
+# métrica -> (unidad, confianza). La intensidad media es una estadística directa; el resto depende de THRESHOLD.
 METRICS = {
     "mean_intensity": ("intensity_0_255", "high"),
     "bright_pixel_fraction": ("fraction", "medium"),
@@ -35,7 +35,7 @@ METRICS = {
 
 
 def frame_metrics(gray: np.ndarray, threshold: int = THRESHOLD) -> dict[str, float | None]:
-    """Metrics for one 2-D uint8 image. Geometry metrics are None when nothing is bright."""
+    """Métricas de una imagen 2-D uint8. Las métricas geométricas son None si ningún píxel es brillante."""
     mask = gray >= threshold
     area = int(mask.sum())
     out: dict[str, float | None] = {
@@ -64,7 +64,7 @@ def _rows_for(args: tuple[Path, dict]) -> list[dict]:
     raw_root, f = args
     path = raw_root / f["relative_path"]
     if not path.is_file():
-        return []  # missing asset: skipped, warning already carried by frame_catalog
+        return []  # recurso faltante: se omite; frame_catalog ya lleva la advertencia
     rows = []
     for name, value in frame_metrics(load_gray(path)).items():
         if value is None:
@@ -85,7 +85,7 @@ def run(raw_root: Path, step: int) -> int:
     last = {}
     for f in rows:
         last[f["sequence_id"]] = f["frame_index"]
-    # Keep every Nth frame plus first-after-gap and last frames, so gaps stay visible in charts.
+    # Conserva uno de cada N fotogramas más el primero tras un hueco y el último, para que los huecos se vean en los gráficos.
     frames = [f for f in rows if int(f["frame_index"]) % step == 0 or "gap_before" in f["warning"]
               or last[f["sequence_id"]] == f["frame_index"]]
     n = 0

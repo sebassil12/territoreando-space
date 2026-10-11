@@ -29,7 +29,7 @@ def row(folder, ftype, raw_id, group="S1", camera="C2", part="1", ext="jpeg"):
 
 
 def test_frames_sorted_by_raw_id_and_time_derived(tmp_path):
-    ids = [1000, 1066, 1033, 1099]  # deliberately unsorted in the inventory
+    ids = [1000, 1066, 1033, 1099]  # desordenados a propósito en el inventario
     raw = make_raw(tmp_path, [row("A", "Raw JPEG", i) for i in ids])
     out = bc.build(raw, tmp_path / "out")
     frames = next(iter(out["frames"].values()))
@@ -66,7 +66,7 @@ def test_raw_and_mapped_same_range_are_variants_not_extra_frames(tmp_path):
     assert by_type["Mapped JPEG"]["sequence_role"] == "processing_variant"
     assert by_type["Mapped JPEG"]["temporal_quality"] == "overlapping_variant"
     assert by_type["Raw JPEG"]["sequence_id"] != by_type["Mapped JPEG"]["sequence_id"]
-    assert all(len(v) == 3 for v in out["frames"].values())  # never merged into 6 frames
+    assert all(len(v) == 3 for v in out["frames"].values())  # nunca se combinan en 6 fotogramas
 
 
 def test_consecutive_parts_of_different_variants_are_both_primary(tmp_path):
