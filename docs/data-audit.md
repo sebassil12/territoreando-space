@@ -185,7 +185,7 @@ Cobertura del manifiesto (H7):
 **Archivos ausentes (verificado contra el manifiesto xlsx y DoD Tabla 2).**
 - Sin imágenes locales de S2 y S7 (solo rejillas), ni de S5C1, S6C1 en JPEG, ni de F1 pre-flow (las carpetas F1 son BIT).
 - Muestras con imágenes locales parciales: S1 10 000/11 400; S3, S8, S9 ≈17–33 %. Las carpetas JPEG/PNG de
-  muestra cubren ≈150–167 s cada una; urban2019 p.180 reporta que S9 duró 900 s, así que los fotogramas locales de S9 cubren una
+  muestra cubren ≈150–167 s cada una; urban2019 p.181 reporta que S9 duró 900 s, así que los fotogramas locales de S9 cubren una
   parte de la prueba (cuál parte: desconocido, el instante de ignición no está en los archivos locales).
 - Datos de sensores en Excel citados en DoD (H6): ausentes. `i_Investigation.txt` y `s_PSI-99-2.txt`: ausentes.
 - No hay rejillas "Mapped" (`DistortionGrids_Sample_ROI_Mapped`, DoD Tabla 4) ni RAW (`Raw_DistroMaster`).
@@ -228,7 +228,7 @@ Subconjunto mínimo defendible (todo SAFFIRE-II):
    resultados publicados `saffire2-s5-spread-rate` y `saffire2-s5-pyrolysis-length` (urban2019 p.177); material
    documentado en DoD Tabla 1 y urban2019 p.173. Es la única muestra con material, condición y resultado publicados.
 2. **Muestra 9 (PMMA plano)**: `S9-C1-raw-jpeg-part1`; resultados `saffire2-s9-limiting-length` y
-   `saffire2-s9-duration` (urban2019 p.180). Mostrar explícitamente que los fotogramas locales cubren ≈167 s de 900 s.
+   `saffire2-s9-duration` (urban2019 p.181). Mostrar explícitamente que los fotogramas locales cubren ≈167 s de 900 s.
 3. **Comparación de condiciones** de las 9 muestras desde DoD Tabla 1 (material, espesor, flujo, ignitor), marcando
    las muestras sin imágenes locales (S2, S7) y el conflicto de flujo de S6.
 

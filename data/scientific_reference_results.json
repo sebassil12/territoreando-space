@@ -66,7 +66,7 @@
       "value": 9,
       "unit": "cm",
       "source": "urban2019",
-      "page": 180,
+      "page": 181,
       "notes": "Section 5.3: 'about 9 cm'. Flame tip approaches a limiting position after about 750 s."
     },
     {
@@ -81,7 +81,7 @@
       "value": 900,
       "unit": "s",
       "source": "urban2019",
-      "page": 180,
+      "page": 181,
       "notes": "Test terminated at 900 s (15 min). Flame base started moving at ~400 s and was at 5 mm at 900 s."
     },
     {
@@ -132,7 +132,7 @@
   ],
   "facts": [
     {"id": "fact-flight", "text": "Saffire-2 flew on CRS OA-5 (Cygnus) and burned nine smaller samples, each 29 cm x 5 cm.", "source": "urban2019", "page": 173},
-    {"id": "fact-samples", "text": "Samples 5 and 6 were SIBAL fabric; Sample 9 was a 1-cm-thick flat PMMA slab.", "source": "urban2019", "page": 173},
+    {"id": "fact-samples", "text": "Samples 5 and 6 were SIBAL fabric; one sample was a flat PMMA slab (identified as Sample 9 on p.181).", "source": "urban2019", "page": 173},
     {"id": "fact-cameras", "text": "Two cameras recorded the burns at 30 frames per second, each imaging just over half of the sample.", "source": "urban2019", "page": 173},
     {"id": "fact-led", "text": "The sample was illuminated with a green LED for 0.4 s every 2 s so the pyrolysis char front could be seen.", "source": "urban2019", "page": 173},
     {"id": "fact-tracking", "text": "Pyrolysis front and base were tracked along the sample centerline; pyrolysis length is the distance between them.", "source": "urban2019", "page": 175},
