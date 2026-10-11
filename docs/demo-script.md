@@ -1,5 +1,11 @@
 # Guion de demo (≈4 min)
 
+> **Demo del estado actual (capa de evidencia).** Recorre lo que existe hoy: catálogo, visor y referencias
+> publicadas. El producto objetivo es findings-first (hallazgo → confianza/relevancia → evidencia → comparación →
+> interpretación por IA); ese guion se escribirá cuando exista la capa de hallazgos (backlog P1-4 en
+> `docs/implementation-plan.md`). En el paso 1, presentar la herramienta como "la capa de evidencia de un dashboard
+> de hallazgos", no como el producto final.
+
 Inicie ambos servidores (README → Ejecutar) y abra http://localhost:5173.
 
 1. **Resumen** — "Saffire-II quemó nueve muestras en órbita; las llamas en microgravedad se comportan de forma distinta.

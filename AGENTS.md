@@ -1,17 +1,39 @@
 # AGENTS.md
 
 Instrucciones para agentes de código de IA (Claude Code, Codex) que trabajan en este repositorio.
-Para personas: esta es también la descripción precisa más breve del sistema.
 
 ## Misión
 
-Construir un dashboard interactivo con IA que resuma, rankee e interprete hallazgos de combustión en microgravedad a partir de los datos y la investigación de SAFFIRE-II / PSI-99 de la NASA, para el reto *Flame in Freefall* de NASA Space Apps 2026.
+Construir, para el reto *Flame in Freefall* de NASA Space Apps 2026, un dashboard interactivo con IA que resuma,
+jerarquice e interprete **hallazgos científicos** de combustión en microgravedad (SAFFIRE-II / PSI-99) y entregue
+insights trazables sobre seguridad contra incendios en vuelos espaciales tripulados.
 
-El objetivo es convertir evidencia científica dispersa en insights claros, jerarquizados y trazables sobre seguridad contra incendios en vuelos espaciales tripulados.
+- **Unidad primaria del producto: el hallazgo científico** (una afirmación publicada, citada con archivo + página),
+  junto con su nivel de confianza, su relevancia para la seguridad y su evidencia.
+- **Imágenes, secuencias y archivos son evidencia de respaldo**, no el producto. El trabajo existente (normalización,
+  metadatos de secuencias, calidad temporal, inventario de calibración, métricas de imagen) es la *capa de evidencia*.
+- Cada afirmación cita su fuente y se etiqueta como: resultado publicado · dato observado · métrica derivada ·
+  interpretación (por IA) · limitación.
 
-Las imágenes, secuencias y archivos son evidencia de respaldo; el producto central son los hallazgos, su relevancia, su confiabilidad y su interpretación.
+### Qué NO es este producto
+- No es un simulador CFD ni un modelo físico.
+- No es un predictor universal de riesgo de incendio.
+- No es un gemelo digital de ninguna nave o experimento.
+- No es un sistema de seguridad certificado ni una herramienta de decisión operativa.
+- No es una aplicación centrada en una galería de imágenes: las imágenes solo respaldan hallazgos.
 
-El dashboard no es un visor de imágenes, un simulador CFD ni un predictor universal de incendios. Cada afirmación debe citar su fuente y distinguir entre resultado publicado, dato observado, métrica derivada, interpretación por IA y limitación.
+## Flujo de producto
+
+```
+Hallazgo (jerarquizado, criterio visible)
+   → Confianza y relevancia para la seguridad (categorías documentadas + justificación)
+   → Evidencia (fuente citada; secuencias / fotogramas / referencias vinculadas)
+   → Comparación de condiciones (O2, flujo, presión, material, escala, según la fuente)
+   → Interpretación por IA (etiquetada, basada solo en hallazgos citados)
+```
+
+Estado: el flujo está **planificado**. Hoy existe la capa de evidencia (catálogo, visor, referencias publicadas,
+asistente determinista). Ver `docs/gap-analysis.md` y `docs/implementation-plan.md`.
 
 ## Arquitectura
 
@@ -42,7 +64,9 @@ frontend/  React + TS + Vite + Tailwind v4, calls /api via Vite proxy
 | `frontend/src/i18n.tsx` | locale de la UI: diccionarios `es` / `en`, `I18nProvider`, `useT()` | `es` por defecto; todo texto visible pasa por `t('...')` |
 | `frontend/src/api.ts` | tipos + funciones de consulta | refleja aquí las formas del backend |
 | `tests/` | pytest: pipeline (datos sintéticos), API, asistente | las pruebas de la API usan los catálogos versionados |
-| `docs/` | contexto, diccionario de datos, linaje, limitaciones, demo, plan | actualizar cuando cambie el comportamiento |
+| `docs/` | contexto, diccionario de datos, linaje, limitaciones, brechas, demo, plan | actualizar cuando cambie el comportamiento |
+| `data/findings.json` | **planificado**: hallazgos transcritos a mano con cita (archivo + página) | no existe aún; ver `docs/implementation-plan.md` |
+| rutas `/api/findings*` | **planificado**: listado jerarquizado, detalle, evidencia, comparación | no existen aún |
 
 Sin base de datos, sin colas, sin microservicios. Mantenerlo así salvo que aparezca una necesidad medida.
 
@@ -75,6 +99,23 @@ Ejecute los tres checks antes de dar una tarea por terminada.
 9. Los archivos bajo `descompressed/` son de solo lectura.
 10. Los archivos faltantes deben producir advertencias, nunca fallos.
 
+### Reglas a nivel de hallazgo (complementan, no reemplazan, las anteriores)
+11. Todo hallazgo cita su fuente (archivo + página). Sin cita no hay hallazgo. El texto se transcribe o parafrasea
+    fielmente de la fuente; nunca se redacta a partir de píxeles ni de conocimiento no citado.
+12. La confianza y la relevancia para la seguridad son **categorías documentadas con criterios explícitos**
+    (ver `docs/implementation-plan.md`) y siempre llevan una justificación textual. Nunca se usan puntuaciones
+    numéricas inventadas ni probabilidades.
+13. Toda jerarquización (ranking) expone su criterio y orden de desempate en la UI y en la API. Nada se ordena por
+    un criterio oculto.
+14. La interpretación por IA se etiqueta como **Interpretación (IA)**, se basa solo en hallazgos citados y cargados,
+    cita los IDs de hallazgo que usa, no produce valores físicos nuevos y rechaza la inferencia física (regla 4).
+15. Una vinculación hallazgo → secuencia/fotograma requiere una fuente documentada. Sin ella, la evidencia de imagen
+    se muestra como *contexto ilustrativo*, nunca como medición del hallazgo (ver regla 5).
+16. Comparar condiciones solo entre valores publicados y citados; las condiciones no reportadas quedan vacías,
+    nunca estimadas.
+17. La relevancia para la seguridad describe por qué un hallazgo importa para el diseño o la operación en vuelo
+    tripulado según la fuente; nunca es una predicción de riesgo para un material, nave o misión concretos.
+
 ## Convenciones de código
 - Identificadores y mensajes de commit en inglés; comentarios, docstrings y documentación en español; el texto de la UI
   pasa por el locale del frontend (`frontend/src/i18n.tsx`, `es` por defecto, `en` disponible).
@@ -95,4 +136,5 @@ Ejecute los tres checks antes de dar una tarea por terminada.
 - Qué significa una columna → `docs/data-dictionary.md`
 - Cómo se derivó un valor → `docs/data-lineage.md`
 - Qué no podemos afirmar → `docs/scientific-limitations.md`
-- Qué sigue → `docs/implementation-plan.md`
+- Qué falta para ser findings-first → `docs/gap-analysis.md`
+- Qué sigue (backlog y MVP) → `docs/implementation-plan.md`

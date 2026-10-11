@@ -1,17 +1,28 @@
 # territoreando-space — Flame in Freefall
 
-**Explorador de evidencia SAFFIRE-II** para el reto del NASA Space Apps Challenge 2026
-*Flame in Freefall: AI-Powered Fire Safety Insights from Microgravity Combustion Data*.
+**Dashboard de hallazgos sobre seguridad contra incendios en microgravedad** para el reto del NASA Space Apps
+Challenge 2026 *Flame in Freefall: AI-Powered Fire Safety Insights from Microgravity Combustion Data*.
 
 ## De qué trata
-Un dashboard visual sobre los datos de combustión en microgravedad del experimento Saffire-II de la NASA (realizado a
-bordo de Cygnus, misión CRS OA-5). Permite a cualquier persona —estudiantes, desarrolladores, personas sin formación
-aeroespacial— recorrer las secuencias de imágenes publicadas, comprobar si cada una es temporalmente continua,
-reproducirlas fotograma a fotograma con trazabilidad completa (secuencia, fotograma, `raw_id`, tiempo, archivo
-fuente), graficar estadísticas simples de píxeles y consultar, junto a ellas, los resultados científicos publicados.
+Un dashboard interactivo con IA que resume, jerarquiza e interpreta **hallazgos científicos** de combustión en
+microgravedad (experimento Saffire-II de la NASA, Cygnus, misión CRS OA-5) para entregar insights trazables sobre
+seguridad contra incendios en vuelos espaciales tripulados. La unidad central es el hallazgo: cada uno cita su fuente
+(archivo + página), declara su confianza y su relevancia para la seguridad con criterios documentados, enlaza su
+evidencia y puede compararse con otros por condiciones de ensayo.
 
-> Dashboard de exploración de evidencia. No es un simulador CFD, no es un predictor de riesgo de incendio y no es un
-> gemelo digital.
+Las secuencias de imágenes, su continuidad temporal, el inventario de calibración y las métricas de píxeles son la
+**capa de evidencia** que respalda los hallazgos.
+
+### Estado actual vs. objetivo
+- **Implementado hoy (capa de evidencia):** catálogo de secuencias con calidad temporal, visor fotograma a fotograma
+  con procedencia, métricas de píxeles, valores de referencia publicados con página y un asistente determinista
+  basado en fuentes (sin LLM).
+- **Planificado (capa de hallazgos):** modelo de hallazgos, confianza, relevancia para la seguridad, ranking con
+  criterio visible, comparación de condiciones e interpretación por IA. Ver
+  [docs/gap-analysis.md](docs/gap-analysis.md) y [docs/implementation-plan.md](docs/implementation-plan.md).
+
+> No es un simulador CFD, ni un predictor universal de riesgo de incendio, ni un gemelo digital, ni un sistema de
+> seguridad certificado, ni una galería de imágenes. Las imágenes solo respaldan hallazgos.
 
 ## Qué considerar antes de contribuir
 1. **Los datos crudos no están en Git.** Las imágenes, archivos comprimidos, inventario y artículo de SAFFIRE-II
@@ -42,7 +53,7 @@ data/scientific_reference_results.json   valores transcritos de urban2019.pdf (c
 backend/              aplicación FastAPI + asistente determinista
 frontend/             React + TypeScript + Vite + Tailwind
 tests/                suite de pytest
-docs/                 contexto, diccionario de datos, linaje, limitaciones, guion de demo, plan
+docs/                 contexto, diccionario de datos, linaje, limitaciones, brechas, guion de demo, plan
 AGENTS.md             arquitectura + reglas para agentes de IA (CLAUDE.md lo importa)
 ```
 
@@ -76,8 +87,8 @@ uv run ruff check pipeline backend tests
 cd frontend && npm run lint && npm run build
 ```
 
-## API
-Todas las respuestas: `{ "data", "source", "warnings", "quality" }`.
+## API (actual)
+Las rutas de hallazgos (`/api/findings*`) están planificadas y aún no existen. Todas las respuestas: `{ "data", "source", "warnings", "quality" }`.
 
 | Endpoint | Propósito |
 |---|---|
