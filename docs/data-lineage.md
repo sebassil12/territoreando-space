@@ -58,3 +58,67 @@ uv run python -m pipeline.build_inventory   # solo lectura de descompressed/ →
 Inventario archivo por archivo de `descompressed/` (tipo por firma, cabeceras de imagen, documentos, roles y
 muestra/material solo con cita documental): `docs/data-inventory.csv`, generado por `pipeline/build_inventory.py`;
 leyenda y auditoría en `docs/data-audit.md`.
+
+## Architecture
+
+Derived data flows from the offline pipeline to committed CSV/JSON, then through FastAPI to React.
+The backend also opens original images read-only to serve frames; TIFF conversion happens in memory.
+Catalog and reference data are loaded into memory at app startup. The frontend consumes `/api` via the Vite proxy.
+
+The separate dimensionless model API accepts explicit user assumptions and evaluates a pure steady 0D
+equation in memory. This request-time calculation does not regenerate evidence catalogs or metrics,
+write outputs, or introduce a database, queue or service. There is no model frontend yet.
+
+| Path | Responsibility |
+|---|---|
+| `descompressed/` | Original inventories, images and publications; read-only and git-ignored |
+| `pipeline/build_catalog.py` | Inventory → sequence, frame and calibration catalogs; continuity cross-check |
+| `pipeline/compute_metrics.py` | Frames and images → sampled pixel statistics |
+| `data/processed/*.csv` | Committed, reproducible catalogs and image metrics |
+| `data/scientific_reference_results.json` | Hand-transcribed published values and facts with citations |
+| `backend/app.py` | App factory, catalog loading, `/api` routes and original-image serving |
+| `backend/assistant.py` | Deterministic answers from catalogs and published references |
+| `backend/physics.py` | Pure dimensionless thin-fuel plus-root evaluation; no I/O |
+| `backend/simulation_contracts.py` | Versioned twin contracts and equation/source metadata |
+| `frontend/src/App.tsx` | Shell, navigation, overview, catalog, science, assistant and limitations |
+| `frontend/src/Viewer.tsx` | Playback, provenance, frame detail and SVG metric chart |
+| `frontend/src/api.ts` | API types and fetch helpers |
+| `tests/` | Synthetic pipeline/model tests, evidence API/assistant tests, and asset-independent twin API tests |
+| `docs/` | Scope, sources, schemas, derivations, limitations, demo and implementation status |
+
+
+## Model evaluation flow
+
+Model results use `quality="modelled_unvalidated"`, carry the original dimensionless inputs and model
+version, and are never stored among observations, image metrics or published reference results.
+The model's source PDF is cited by URL/file/page; a local copy is not required for runtime evaluation.
+Contract, equation, hypotheses and mathematical states: [dimensionless model API](dimensionless-model.md).
+
+### Implemented scenario routing
+
+The [Scenario Engine](scenario-engine.md) is implemented:
+versioned scenario → units/provenance checks → model requirements and applicability
+assessment → eligible existing evaluator → result with evidence and visual capabilities.
+It remains within this FastAPI application and does not change the offline evidence
+pipeline. Registry, contracts, assessment and dimensionless routing are implemented;
+frontend controls and visual adapters remain pending. Evaluation routes only to
+the existing dimensionless model; 2016 and Urban return blocker reports and no
+numerical results.
+
+| File | Responsibility |
+|---|---|
+| backend/scenario_contracts.py | Strict version 1 scenario, quantity/declaration provenance and registry/assessment/evaluation contracts |
+| backend/scenario_registry.py | Three-model requirements, source citations and server-owned evidence status; no physical presets |
+| backend/scenario_engine.py | Pure unit normalization, applicability/requirements/provenance decisions, fingerprints and dimensionless adapter |
+| tests/test_scenario_engine.py | Selection/refusal, source scope, unreviewed provenance, unavailable models, stale revisions and API compatibility |
+
+Requests follow: scenario → normalized units and retained original provenance →
+registry assessment → exact permitted output → reassessment/fingerprint check →
+existing physics evaluator → in-memory result. No sources are fetched, no formula
+from request text is executed, and no evidence files are written. Assessment and
+registry responses have quality unavailable because they contain no numerical
+model result; successful evaluation has quality modelled_unvalidated.
+
+**IMPLEMENTED:** backend decisions and adapter. **BLOCKED:** research-model and
+documented-experiment evaluation. **PENDING:** reviewed parameter/derivation records,
+frontend and visual twin. **VALIDATED:** no project experimental model validation.

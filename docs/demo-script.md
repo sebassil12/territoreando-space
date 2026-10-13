@@ -28,3 +28,7 @@ Inicie ambos servidores (README → Ejecutar) y abra http://localhost:5173. La i
 
 Frase de cierre: "Cada afirmación del dashboard se puede rastrear hasta un archivo y una página; lo que no está en las
 fuentes, no se afirma."
+
+## Separate model API
+
+The Scenario Engine and dimensionless model remain API-only. The findings dashboard does not expose scenario controls or a physical flame simulation. Model arithmetic is unvalidated; it does not reproduce a published finding. See [model contract](dimensionless-model.md) and [Scenario Engine](scenario-engine.md).

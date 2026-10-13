@@ -59,7 +59,7 @@ AGENTS.md             arquitectura + reglas para agentes de IA (CLAUDE.md lo imp
 ```
 
 ## Requisitos
-Python 3.11+ con [uv](https://docs.astral.sh/uv/), Node 20+.
+Python 3.11+ con [uv](https://docs.astral.sh/uv/), Node 20.19+ (or 22.12+).
 
 ## Rutas de datos
 Los datos crudos se esperan en `./descompressed/` (descomprima `SAFIRE-II Project.zip` en la raíz del proyecto; ya
@@ -137,6 +137,11 @@ Todas las respuestas: `{ "data", "source", "warnings", "quality" }`.
 | `GET /api/findings/{id}` | hallazgo + condiciones de la muestra + secuencias relacionadas con advertencias; 404 si no existe |
 | `GET /api/conditions` | condiciones citadas por muestra |
 | `GET /api/compare?samples=5,9` o `?finding_ids=…` | condiciones lado a lado con factores que difieren, faltan o están en conflicto; sin conclusiones |
+| `GET /api/twin/models` | Implemented equation, definitions, assumptions, versions and source |
+| `POST /api/twin/evaluate` | Dimensionless cases and mathematical branch states |
+| `GET /api/twin/scenario-models` | Three-model registry, requirements, evidence and implementation availability |
+| `POST /api/twin/scenarios/assess` | Version 1 scenario: compatibility, blockers, exact permitted outputs and fingerprint |
+| `POST /api/twin/scenarios/evaluate` | Reassess scenario/fingerprint and evaluate only an eligible dimensionless case |
 | `POST /api/assistant` | `{question, sequence_id?}` → status (`answered` / `refused` / `not_available`), observation, interpretation, evidence (IDs de hallazgo), limitations |
 
 ## Qué está disponible y qué falta
@@ -156,3 +161,28 @@ Todas las respuestas: `{ "data", "source", "warnings", "quality" }`.
 - Ninguna predicción fuera de las condiciones ensayadas (urban2019 p.181, conclusión 6; `F-urban2019-009`).
 
 Lista completa: [docs/scientific-limitations.md](docs/scientific-limitations.md). Demo: [docs/demo-script.md](docs/demo-script.md).
+
+## Independent model API and Scenario Engine
+
+The React dashboard explores Saffire-II microgravity combustion images, temporal continuity,
+frame provenance, pixel statistics and separately labeled published scientific references.
+The first twin increment adds an **API-only, dimensionless steady 0D model**: the thermally thin
+plus-root branch of Bhattacharjee et al., NASA NTRS 20040053557, Eq. (5), p.202.
+
+The equation has been verified against the source PDF; the implementation is **scientifically
+unvalidated**. It evaluates explicit hypothetical inputs, without materials, dimensional speed,
+physical extinction diagnosis, temperature, heat release, risk or CFD. There is no model frontend,
+transient 1D simulation or calibrated/synchronized digital twin.
+See [model equation, assumptions and API contract](docs/dimensionless-model.md).
+
+The **Scenario Engine backend is IMPLEMENTED**: version 1 scenarios, a registry
+of three models, compatibility/requirements/evidence assessment and an adapter
+to the existing dimensionless evaluator. Bhattacharjee 2016 and Urban 2019 are
+**BLOCKED**, even with complete hypothetical inputs; missing inputs and source
+limitations are reported explicitly. Frontend scenarios, reviewed input evidence,
+dimensional conversions and a visual twin are **PENDING**. No physical model is
+experimentally **VALIDATED** by this project.
+See [Scenario Engine contract and examples](docs/scenario-engine.md#implemented-api-contract).
+
+
+Model endpoints are API-only and work without raw assets. Scenario assessment preserves inputs, sources, warnings and quality. Scientific defaults and dimensional conversions are absent. See [scenario requests and response statuses](docs/scenario-engine.md#implemented-api-contract).

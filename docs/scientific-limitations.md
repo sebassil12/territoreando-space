@@ -63,3 +63,74 @@ Limitaciones concretas conocidas:
 ## Valores de referencia publicados
 Se muestran en la vista *Contexto científico*, etiquetados como *Referencia publicada*, con números de página. El
 dashboard **no** los calcula y no están vinculados a ninguna secuencia de imágenes.
+
+## Dimensionless model status
+
+The backend implements the thermally thin, plus-root branch of Bhattacharjee et al.,
+`20040053557.pdf`, Eq. (5), p.202; definitions are in Eq. (2), p.201.
+See [equation, assumptions and API contract](dimensionless-model.md).
+
+The equation was verified against the NASA PDF. **The implementation is not experimentally validated**
+and is not calibrated to a SAFFIRE sequence. Its scope is a steady 0D opposed-flow calculation;
+no frontend, dimensional speed or transient 1D evolution is implemented.
+The exposed non-negative input domain is mathematical, not an empirically validated operating range.
+Positive, zero, negative and non-real branches are not physical diagnoses of burning or extinction.
+The API supplies no material properties, temperatures, heat release or risk.
+
+Successful model responses have `quality="modelled_unvalidated"`; published references retain
+`quality="published_reference"`. Synthetic numerical/API tests verify software behavior only.
+
+## Bhattacharjee 2016 research outcome
+
+Bhattacharjee et al. (2016), doi:10.1016/j.combustflame.2015.10.023, was investigated
+separately from the implemented 2003 dimensionless branch. The critical opposed-flow
+velocity equation is verified in its NASA republication, `TM-20210011385.pdf`, Eq. (2.5),
+printed p.28 (derivation on pp.26–27). Several documented parameters were located,
+including vaporization temperature and numerical-model flame temperature (p.28),
+fuel thicknesses and oxygen conditions (pp.20–21).
+
+The investigation could not reproduce the published theoretical critical velocities
+of 7.5 and 10 mm/s with complete parameter traceability. The corresponding **Published reference** values
+are in Table 2.1, p.28; they are extinction flow velocities, not flame spread rates.
+Equation verification and the authors' comparisons do not establish experimental
+validation by this project. **This model must not be presented as experimentally
+validated by our project.**
+
+The 2016 model is not implemented. It may remain a future parametric evaluator,
+with explicit user-supplied inputs, no presets and no assumed values. Missing
+parameters must remain missing; they must not be fitted to reproduce the references.
+See [sources](sources.md#bhattacharjee-2016-investigation) and
+[implementation status](implementation-plan.md#bhattacharjee-2016-decision).
+
+## Urban 2019 reproducibility audit
+
+The [Sample 5 audit](urban-reproducibility-audit.md) found no complete, traceable
+input set for an absolute spread-rate calculation. Eq. (2) is verified in the
+publisher's accessible HTML; its printed PDF page is not independently verified
+in this checkout. The microgravity scaling relation, Eq. (6), is a proportionality,
+not a formula with a documented numerical prefactor. The published pyrolysis
+length is an observed input for the analytical calculation, not a predicted result.
+
+No absolute speed or numerical error can be reported while the required thermal
+inputs remain unresolved. No values were assumed or fitted, and no Urban model
+was implemented. This finding concerns the sources audited, not a proof that
+reproduction is impossible with additional experimental records.
+
+## Scenario Engine claim boundaries
+The implemented [Scenario Engine](scenario-engine.md) retains these claim boundaries.
+Its applicability decision, complete hypothetical inputs or future successful
+parametric evaluation would not establish reproduction or experimental validation.
+Common scenario controls require documented model dependencies before they can
+support a physical sensitivity claim. No current steady 0D model supplies flame
+position, shape or time evolution for a calibrated visual twin.
+
+**IMPLEMENTED:** mathematical dimensionless routing and provenance-aware assessment.
+**BLOCKED:** 2016/Urban numerical evaluation, unsupported physical outputs,
+unreviewed essential citations/derivations and documented-experiment evaluation.
+Urban's printed equation page remains unresolved. Complete hypothetical parameters
+do not unblock either research evaluator.
+
+**PENDING:** reviewed parameter evidence, dimensional conversion adapters,
+frontend and calibrated visual prediction. **VALIDATED:** none of these models
+has experimental validation by this project. Submitted citations and software
+tests cannot automatically promote a result into scientific validation.

@@ -12,15 +12,44 @@ import os
 from collections import defaultdict
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse, Response
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import FileResponse, JSONResponse, Response
 from PIL import Image
 from pydantic import BaseModel
 
 from backend import assistant
 from backend.envelope import envelope
 from backend.findings import load_store
+from backend.physics import evaluate_thin_branch
 from backend.routes.findings import build_findings_router
+from backend.scenario_contracts import (
+    ScenarioAssessmentEnvelope,
+    ScenarioEvaluationEnvelope,
+    ScenarioEvaluationRequest,
+    ScenarioModelsEnvelope,
+    ScenarioRequest,
+)
+from backend.scenario_engine import UnknownScenarioModel, assess_scenario, evaluate_scenario
+from backend.scenario_registry import (
+    REGISTRY_VERSION,
+    SCENARIO_SOURCE,
+    SCENARIO_WARNINGS,
+    scenario_models,
+)
+from backend.simulation_contracts import (
+    MODEL_ID,
+    MODEL_VERSION,
+    SOURCE,
+    WARNINGS,
+    TwinCaseResult,
+    TwinEvaluationData,
+    TwinEvaluationEnvelope,
+    TwinEvaluationRequest,
+    TwinModelsEnvelope,
+    twin_model,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 PROCESSED = ROOT / "data" / "processed"
@@ -133,6 +162,108 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
 
     app = FastAPI(title="Flame in Freefall API")
     app.include_router(build_findings_router(store))
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(request: Request, exc: RequestValidationError):
+        scenario_paths = {
+            "/api/twin/scenario-models", "/api/twin/scenarios/assess", "/api/twin/scenarios/evaluate",
+        }
+        if request.url.path not in {"/api/twin/evaluate", "/api/twin/models"} | scenario_paths:
+            return await request_validation_exception_handler(request, exc)
+        # Do not echo invalid NaN/Infinity inputs into JSON error responses.
+        errors = [{"location": list(e["loc"]), "message": e["msg"], "type": e["type"]}
+                  for e in exc.errors()]
+        return JSONResponse(status_code=422, content=envelope(
+            {"errors": errors}, SCENARIO_SOURCE if request.url.path in scenario_paths else SOURCE,
+            ["Invalid model request; no evaluation performed."], "unavailable",
+        ))
+
+    @app.get("/api/twin/models", response_model=TwinModelsEnvelope)
+    def twin_models():
+        return envelope([twin_model().model_dump()], SOURCE, list(WARNINGS), "modelled_unvalidated")
+
+    @app.post("/api/twin/evaluate", response_model=TwinEvaluationEnvelope)
+    def twin_evaluate(q: TwinEvaluationRequest):
+        if q.model_id != MODEL_ID:
+            return JSONResponse(status_code=404, content=envelope(
+                {"error": "Unknown model_id."}, SOURCE, ["No evaluation performed."], "unavailable",
+            ))
+        results = []
+        for i, case in enumerate(q.cases):
+            try:
+                branch = evaluate_thin_branch(case.eta_g, case.radiation_number)
+            except ValueError as exc:
+                return JSONResponse(status_code=422, content=envelope(
+                    {"error": str(exc), "case_index": i}, SOURCE,
+                    ["No evaluation returned; inputs exceed the numerical implementation's range."], "unavailable",
+                ))
+            results.append(TwinCaseResult(
+                **case.model_dump(), eta_f=branch.eta_f, discriminant=branch.discriminant,
+                model_status=branch.model_status,
+            ))
+        data = TwinEvaluationData(
+            schema_version=q.schema_version, model_id=q.model_id, model_version=MODEL_VERSION,
+            mode=q.mode, flow_configuration=q.flow_configuration, parameter_origin=q.parameter_origin,
+            scientifically_validated=False,
+            units={name: "dimensionless" for name in ("eta_g", "radiation_number", "eta_f", "discriminant")},
+            results=results,
+        )
+        return envelope(data.model_dump(), SOURCE, list(WARNINGS), "modelled_unvalidated")
+
+    @app.get("/api/twin/scenario-models", response_model=ScenarioModelsEnvelope)
+    def scenario_model_registry():
+        return envelope(
+            {"schema_version": "1", "registry_version": REGISTRY_VERSION,
+             "models": [m.model_dump() for m in scenario_models()]},
+            SCENARIO_SOURCE, list(SCENARIO_WARNINGS), "unavailable",
+        )
+
+    def scenario_assessment(q: ScenarioRequest):
+        try:
+            return assess_scenario(q)
+        except UnknownScenarioModel as exc:
+            return JSONResponse(status_code=404, content=envelope(
+                {"error": str(exc)}, SCENARIO_SOURCE, list(SCENARIO_WARNINGS), "unavailable",
+            ))
+        except ValueError as exc:
+            return JSONResponse(status_code=422, content=envelope(
+                {"error": str(exc)}, SCENARIO_SOURCE,
+                [*SCENARIO_WARNINGS, "Invalid scenario units or values; no evaluation performed."], "unavailable",
+            ))
+
+    @app.post("/api/twin/scenarios/assess", response_model=ScenarioAssessmentEnvelope)
+    def scenario_assess(q: ScenarioRequest):
+        assessment = scenario_assessment(q)
+        if isinstance(assessment, JSONResponse):
+            return assessment
+        return envelope(assessment.model_dump(), SCENARIO_SOURCE, list(SCENARIO_WARNINGS), "unavailable")
+
+    @app.post("/api/twin/scenarios/evaluate", response_model=ScenarioEvaluationEnvelope)
+    def scenario_evaluate(q: ScenarioEvaluationRequest):
+        assessment = scenario_assessment(q.scenario)
+        if isinstance(assessment, JSONResponse):
+            return assessment
+        if assessment.fingerprint != q.assessment_fingerprint:
+            return JSONResponse(status_code=409, content=envelope(
+                {"error": "Stale scenario assessment; reassess the current scenario and model versions.",
+                 "assessment": assessment.model_dump()},
+                SCENARIO_SOURCE, list(SCENARIO_WARNINGS), "unavailable",
+            ))
+        if assessment.blocked_outputs:
+            return JSONResponse(status_code=422, content=envelope(
+                {"error": "Scenario evaluation is blocked; no fallback or partial results.",
+                 "assessment": assessment.model_dump()},
+                SCENARIO_SOURCE, list(SCENARIO_WARNINGS), "unavailable",
+            ))
+        try:
+            data = evaluate_scenario(assessment)
+        except ValueError as exc:
+            return JSONResponse(status_code=422, content=envelope(
+                {"error": str(exc), "assessment": assessment.model_dump()},
+                SCENARIO_SOURCE, [*SCENARIO_WARNINGS, "No numerical result returned."], "unavailable",
+            ))
+        return envelope(data.model_dump(), SCENARIO_SOURCE, [*SCENARIO_WARNINGS, *WARNINGS],
+                        "modelled_unvalidated")
 
     @app.get("/api/health")
     def health():

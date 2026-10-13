@@ -33,7 +33,7 @@ vinculada y sus limitaciones. Las imágenes y secuencias son evidencia de respal
 | Capa | Estado | Contenido |
 |---|---|---|
 | Evidencia | implementada | catálogos normalizados, metadatos de secuencias, calidad temporal, inventario de calibración, visor, métricas de píxeles, referencias publicadas |
-| Hallazgos | planificada | `data/findings.json` (transcrito y citado), confianza, relevancia, ranking, comparación |
+| Hallazgos | implementada | `data/processed/findings.json` (transcrito y citado), confianza, relevancia, ranking, comparación |
 | Interpretación | parcial | hoy: asistente determinista sin LLM; objetivo: interpretación de hallazgos (LLM o determinista, decisión abierta) |
 
 ## Alcance
@@ -52,7 +52,22 @@ microgravedad y por qué importa para la seguridad en vuelos tripulados.
 1. Toda afirmación científica mostrada en la UI cita una fuente (archivo + página).
 2. Los datos observados, las métricas derivadas de imagen, los resultados publicados, la interpretación por IA y las
    limitaciones se etiquetan por separado.
-3. Las etiquetas de carpeta (S1…S9, F1, F2, C1, C2) no se interpretan como números de muestra ni identidades de cámara.
+3. Folder/sample/camera links use only the documented DoD mapping; scenario inputs are not inferred from images.
 4. Los archivos originales en `descompressed/` nunca se modifican.
 5. Confianza, relevancia para la seguridad y ranking usan categorías y criterios documentados; ver `AGENTS.md`
    (reglas 11–17).
+
+## Separate mathematical model scope
+
+- **IMPLEMENTED:** Scenario Engine backend and mathematical dimensionless evaluation,
+  independent of original assets and without scientific presets.
+- **BLOCKED:** Bhattacharjee 2016 and Urban 2019 evaluation, missing or conflicting
+  essential inputs, unsupported outputs and documented experiments without reviewed
+  parameter records. All causes are returned, including implementation/evidence gaps.
+- **PENDING:** frontend scenarios, sweeps, reviewed property/derivation records,
+  dimensional conversions, complete reproduction audits and a calibrated visual twin.
+- **VALIDATED:** no physical model is experimentally validated by this project.
+  Source equation checks and software tests establish different kinds of verification.
+
+
+The source-cited steady 0D model and Scenario Engine are separate from the findings UI. They produce hypothetical mathematical results only; there is no calibrated/synchronized digital twin, dimensional combustion simulation or physical risk prediction.

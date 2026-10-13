@@ -158,3 +158,73 @@ de la secuencia en lugar de `not_available`.
   `s_PSI-99-2.txt` u otra fuente de la NASA); sin él, la evidencia de imagen es solo ilustrativa.
 - **D4** — Alcance de transcripción del MVP: solo `results` y `facts` existentes como semilla, o lectura completa de
   urban2019 para hallazgos adicionales.
+
+## Model and Scenario Engine status
+
+| Deliverable | Status |
+|---|---|
+| Twin increment 1 | Pure Bhattacharjee thin-fuel dimensionless branch; `/api/twin/models` and `/api/twin/evaluate`; unit/API tests and contract docs | implemented; equation verified, scientifically unvalidated |
+| Bhattacharjee 2016 investigation | Source/equation/parameter review for critical opposed-flow extinction velocity | investigated; equation verified; numerical reproduction incomplete; no implementation |
+| Urban 2019 reproducibility audit | Sample 5 analytical equation, input provenance and independent calculation review | audited sources insufficient; absolute speed/error unresolved; no implementation |
+| Scenario Engine | Version 1 contracts, registry, assessment, provenance/unit checks and dimensionless adapter | **IMPLEMENTED**; API only; research evaluators **BLOCKED**; [contract](scenario-engine.md) |
+
+Status vocabulary: **IMPLEMENTED** means available software; **BLOCKED** means
+evaluation is refused with explicit reasons; **PENDING** means planned work;
+**VALIDATED** means scoped experimental validation. No initial model is
+experimentally **VALIDATED**. Equation verification and passing software checks
+are separate evidence, not experimental validation.
+
+## Twin implementation versus validation
+
+Implemented: a steady 0D plus-root evaluator with explicit dimensionless user assumptions, finite-input
+validation, mathematical branch states and `quality="modelled_unvalidated"`. It works without raw assets
+and does not alter offline evidence artifacts. See [dimensionless model API](dimensionless-model.md).
+
+Also implemented: registry and assessment of all three scenario models,
+exact-output selection, full blocker reports, scope/provenance checks, canonical
+units, scenario fingerprints, and routing only to the existing dimensionless
+branch. Existing endpoints retain their original contracts.
+
+Verified: equation transcription against NASA NTRS 20040053557, Eq. (5), printed p.202.
+Software tests cover algebraic behavior and API contracts; they are not experimental validation.
+
+Pending: React integration, documented dimensional parameters, experimental validation, and any 1D
+evolution. Urban remains unimplemented; [the audit](urban-reproducibility-audit.md) verified Eq. (2) in
+publisher HTML, but its printed PDF page and required thermal inputs remain unresolved.
+Physical extinction diagnostics remain disabled because of
+the source inconsistency. No materials, temperature, heat release, risk or CFD are implemented.
+
+## Bhattacharjee 2016 decision
+
+Research is documented in [sources](sources.md#bhattacharjee-2016-investigation).
+The equation is verified and several documented parameters were located, but the
+published theoretical critical velocities of 7.5 and 10 mm/s in Table 2.1 could not be reproduced with
+complete traceability. Their numeric **Published reference** values and page are
+recorded in the source investigation; they are not project model outputs.
+
+Do not implement the 2016 model at this stage or describe it as experimentally
+validated by this project. A future parametric evaluator may accept explicit inputs,
+without presets or assumed values. It requires a complete parameter/source audit
+before any claim of reproducibility. Equation and software verification remain
+separate from experimental validation.
+
+## Urban 2019 decision
+
+The [reproducibility audit](urban-reproducibility-audit.md) is complete for the
+accessible sources. No absolute prediction or experimental validation was
+established. Sample 5 lacks a complete thermal parameter set; Eq. (6) lacks a
+numerical prefactor, and the published pyrolysis length does not independently
+close a prediction of that length. Further work requires the complete source PDF
+and case-specific thermal inputs with units and page references. Do not introduce
+presets, fit constants to the target result, or implement an Urban evaluator now.
+
+
+## Next model increment
+
+The [first Scenario Engine increment](scenario-engine.md#first-implementable-increment)
+is **IMPLEMENTED**. The next software increment is **PENDING**: a frontend editor
+that consumes assessment, provenance, revision fingerprints and output capability
+gates. No physical animation or dimensional conversion follows automatically.
+Reviewed parameter/derivation records, complete reproduction audits and any new
+physical evaluator require separate work. The 2016 and Urban evaluators remain
+**BLOCKED**, including with complete hypothetical inputs.
