@@ -1,5 +1,25 @@
 # Diccionario de datos
 
+## S5C2 validation audit
+
+`pipeline.validate_s5c2` produces an isolated acquisition audit, without changing the
+runtime catalogs described below. Scope and reproduction:
+[Sample 5/C2 audit](saffire2-validation-audit.md).
+
+| Output | Contract |
+|---|---|
+| `data/processed/s5c2_validation.json` | Generated schema version 1 review summary: source URLs/versions, exact bytes, SHA-256/CRC, frame/sensor continuity, sampled electrical-event brackets, candidate time correspondence, pending calibration and blocked comparison |
+| Local `derived/frames.csv` | Original `raw_id`, archive `source_file`, `source_member`, SHA-256, decoded pixel dimensions, explicit `onboard_jpeg` variant; candidate workbook elapsed seconds, nearest spreadsheet row, signed image-minus-sensor milliseconds and coverage boolean when telemetry is usable |
+| Local `derived/sensors.csv` | Original cached cell text keyed by spreadsheet column letters; `source_file`, `source_sheet`, `source_row`; only rows with epoch cells, with no resampling, interpolation or formula evaluation |
+| Local `derived/sensor_columns.json` | Original labels/units from rows 1/2, exported row count and excluded rows without epoch; empty units remain empty |
+
+The local outputs live under ignored `SAFFIRE-local-validation/`. Full telemetry
+and raw frames are not committed. Summary `quality=audit_not_experimental_validation`
+is an offline audit label, not a new API envelope quality. Null optical ignition,
+trajectory and fidelity error mean unavailable, never zero. Nearest-row timing
+residuals are numerical pairing distances, not a clock uncertainty estimate.
+Published references remain exclusively in `scientific_reference_results.json`.
+
 Todos los archivos los genera `pipeline/` en `data/processed/`. Cada fila incluye `source_file`.
 
 ## sequence_catalog.csv — una fila por carpeta de imágenes

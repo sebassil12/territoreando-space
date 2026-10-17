@@ -281,10 +281,13 @@ See [audit and remaining evidence requirements](nasa-evidence-replay.md).
 
 ### Minimal first experimental-comparison plan
 
-Follow the [Sample 5/C2 decision gates](saffire2-validation-audit.md#minimal-validation-plan-and-decision-gates):
-verify the original publication, acquire the bounded C2 case, review telemetry/image
-registration, validate camera-specific calibration, and compare independently
-annotated held-out observations. Inspect the full experiment, but evaluate the
-current 3D only over a justified steady window. Whole-burn predictive validation
-requires capabilities the current renderer does not provide. Status: audit complete;
-experimental validation and all implementation changes remain pending.
+Follow the [Sample 5/C2 decision gates](saffire2-validation-audit.md#comparison-achieved-and-remaining-gates).
+**IMPLEMENTED:** authorized recovery of both onboard-JPEG ZIPs and the full Sample 5
+sensor workbook; offline CRC/hash/decoding, original-frame extraction, sensor CSV,
+candidate timestamp pairing and a generated review summary. Five visual LED pairs
+support the candidate registration. No dependencies or runtime APIs changed.
+**BLOCKED:** original Urban Vf/lp review, optical ignition, calibrated spatial/time
+registration, independent front/base annotations and a quantitative 3D comparison.
+The first feasible target is a measured planar trajectory displayed in 3D; C2 alone
+does not determine volumetric flame geometry. **VALIDATED:** no scientific model.
+Whole-burn predictive validation requires capabilities the renderer does not provide.

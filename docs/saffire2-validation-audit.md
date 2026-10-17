@@ -1,140 +1,215 @@
-# SAFFIRE-II first experimental comparison audit
+# SAFFIRE-II Sample 5 / C2 validation audit
 
-Date: 2026-10-17. Scope: read-only source investigation; documentation changes
-only. **Candidate: Sample 5, camera C2. Not ready for experimental validation.**
-It has enough identifiable evidence to begin registration/calibration work, but
-full-burn observability and a comparable 3D prediction are not established.
+Date: 2026-10-17. **Acquisition and candidate image/telemetry registration completed;
+quantitative 3D reconstruction remains blocked.** This supersedes the earlier
+range-only inspection. Scope is exclusively Sample 5/C2 onboard JPEG products.
 
-## Source acquisition and local availability
+## Recovered evidence
 
-Start with [NASA PSI-99](https://psi.nasa.gov/physci/repo/data/investigations/PSI-99),
-Raw Data and Science Documents. Versioned download links below resolve to NASA's
-storage; retain these links, not expiring signed redirects. Archive names below
-omit the common `PSI-99_Raw Data_` prefix.
+Source: [NASA PSI-99](https://psi.nasa.gov/physci/repo/data/investigations/PSI-99).
+The user authorized the approximately 57 MB minimum acquisition. The original
+`descompressed/` directory is absent and was not created or modified. No complete
+S5C2 ZIP or Urban PDF was found by filename searches under Desktop, Downloads,
+Documents and temporary storage; external disks and team storage were not searched.
+Temporary storage contained only archive ranges, three decoded frames, the complete
+grid and documentation from the earlier audit.
 
-| File, version 1 | Catalog size | Audit / priority |
+| Official source, version 1 | Exact bytes | Recovery and integrity |
 |---|---:|---|
-| [SAFFIRE_II_S5C2_Image_Data_All_JPEGs_part1.zip](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd74a0e24d624cebd8d&version=1) | 15,706,884 bytes | Central directory checked; two actual JPEG entries decoded and CRC-checked |
-| [SAFFIRE_II_S5C2_Image_Data_All_JPEGs_part2.zip](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd74a0e24d624cebd8e&version=1) | 28,831,042 bytes | Central directory checked; last JPEG decoded and CRC-checked |
-| [SAFFIRE-II_S5C2_DistortionGrids_Sample_ROI.zip](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdcb4a0e24d624cebd03&version=1) | 145,199 bytes | Small archive inspected in full; grid TIFF is 674 × 148 pixels |
-| [Saffire Sensor Data Sample 5.xlsx](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdcb4a0e24d624cebd07&version=1) | 12,281,904 bytes | Bounded ZIP/XML ranges inspected: workbook, strings and first 2,362 data rows |
-| [SAFFIRE-II_MergeResult-jpeg_v5_Final.xlsx](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd64a0e24d624cebd82&version=1) | 20,820,425 bytes | Identified in prior PSI inventory; not downloaded in this audit; needed for delivery completeness |
-| [SAFFIRE-II Readme.docx](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd84a0e24d624cebd95&version=1) | 134,425 bytes | Previously retrieved original reused; p.2 Table 2 maps sample/camera, p.3 Table 4 defines image products |
+| [SAFFIRE_II_S5C2_Image_Data_All_JPEGs_part1.zip](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd74a0e24d624cebd8d&version=1) | 15,706,884 | Downloaded; all 5,000 JPEGs extracted and decoded; CRC passed |
+| [SAFFIRE_II_S5C2_Image_Data_All_JPEGs_part2.zip](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd74a0e24d624cebd8e&version=1) | 28,831,042 | Downloaded; all 4,600 JPEGs extracted and decoded; CRC passed |
+| [Saffire Sensor Data Sample 5.xlsx](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdcb4a0e24d624cebd07&version=1) | 12,281,904 | Downloaded; complete workbook CRC passed; numeric cells extracted |
+| [SAFFIRE-II_S5C2_DistortionGrids_Sample_ROI.zip](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdcb4a0e24d624cebd03&version=1) | 145,199 | Reused complete local copy; CRC passed; TIFF extracted and decoded |
+| [SAFFIRE-II Readme.docx](https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd84a0e24d624cebd95&version=1) | 134,425 | Reused complete local copy; CRC passed |
 
-The Readme identifies JPEGs as created onboard and downlinked. They are source
-JPEG products, not native sensor RAW. Mapped JPEG, TIFF and ICMAD products must
-remain separate. C1 JPEG parts are also listed in the prior PSI inventory (IDs
-`6840cdd74a0e24d624cebd87` and `6840cdd74a0e24d624cebd88`, version 1); their content
-was not inspected. Obtain C1 only if documented fields of view require it to
-observe the complete front/base path. Do not substitute it for missing C2 frames.
+The two ZIPs total **44,537,926 bytes**. Their complete downloaded sizes agree with
+the NASA catalog; part 2 was also checked with HTTP `Content-Range`. A HEAD request
+followed a GET-signed redirect and returned 403; bounded GET and full GET succeeded.
+The new downloads total 56,819,830 bytes; the grid/document were reused. Full-file
+SHA-256 values, versioned URLs and checks are in
+[`data/processed/s5c2_validation.json`](../data/processed/s5c2_validation.json).
+These locally computed hashes identify this acquisition; they are not NASA-published
+checksums. No full mission archive, C1 data or other sample was downloaded.
 
-The documented local source is `SAFIRE-II Project.zip` in team shared storage,
-extracted to `./descompressed/`, or an explicit `SAFFIRE_RAW_DIR`. No shared-storage
-URL is documented. The environment variable is unset and the default directory
-is absent. Targeted filename searches under Desktop and Downloads found no
-original Urban PDF, project archive or matching S5C2 JPEGs. This is not an
-exhaustive search of external disks or team storage. Existing `/private/tmp/`
-research documents were reused; rendered twin screenshots are not NASA evidence.
+Local files are under the existing Git-ignored `SAFFIRE-local-validation/`:
 
-Only about 4.7 MB of bounded source ranges, three JPEG entries and the small grid
-were retrieved into temporary storage. Neither complete image archive nor the
-complete sensor workbook was downloaded. No raw files or reference values were
-added to the repository.
+- `originals/`: complete downloaded/reused inputs, subsequently opened read-only.
+- `frames/<archive-stem>/`: 9,600 original JPEG byte streams, separated by archive.
+- `grid/`: original C2 grid TIFF.
+- `derived/frames.csv`: filename IDs, archive/member, SHA-256, dimensions and
+  candidate sensor-time registration for every frame.
+- `derived/sensors.csv`: 11,363 timestamped rows, all 65 source columns, workbook,
+  sheet and original spreadsheet row numbers; no resampling or formula evaluation.
+- `derived/sensor_columns.json`: source headers/units and exclusion counts.
+- `derived/audit.json`: reproducible numerical/integrity summary.
+- `derived/contact-sheet.png`, `derived/led-review.png`: local visual review sheets
+  assembled from unchanged image pixels; not physical measurements or runtime data.
 
-## Verified sample, frame and time chain
+Readme p.2 Table 2 explicitly maps S5C2 to Sample 5/camera 2; p.3 Table 4 identifies
+these JPEGs as onboard/downlinked products, distinct from native sensor RAW,
+Mapped JPEG, TIFF and ICMAD. The prior mapped part-1 catalog has the same 5,000 IDs,
+but its image geometry and pixels were not substituted for the recovered originals.
 
-1. NASA Readme p.2 Table 2 identifies S5C2 as Sample 5, camera 2. Archive entries
-   explicitly use `S5C2-<identifier>.jpeg`. Folder-to-record association remains
-   the documented shared-label mapping, not a material inference from pixels.
-2. Part 1 lists 5,000 JPEGs, IDs `1479775442720`–`1479775609340`; part 2 lists
-   4,600, IDs `1479775609373`–`1479775762661`. The join interval is 33 ms.
-   Each part has a 33 ms median; maximum intervals are 47 and 45 ms, respectively.
-   Neither has duplicate IDs or gaps exceeding twice its median. Combined
-   filename coverage is 319.941 s, **not an asserted burn duration**. These are
-   archive-directory checks; all images have not been decoded or inventoried locally.
-3. All 5,000 part-1 IDs exactly match the existing
-   `S5-C2-mapped-jpeg-part1` frame catalog. This verifies identifier correspondence,
-   not pixel equivalence or calibration between raw and mapped products.
-4. The sensor workbook's **Calibrated Data** sheet has `Elapsed Time (s)` (A),
-   `Epoch Time` (B), a formatted date/time column (C), igniter current/voltage
-   (AG/AH), `Igniter Power Enable` (AR), `Igniter Select 5` (AW), and camera
-   triggers (BD/BE). Sheet name alone does not validate any project calibration.
-5. Row 3 starts at elapsed zero with epoch `1479775387709`. Cell A4 explicitly
-   uses `A3+(B4-B3)/1000`; elapsed/epoch differences agree to floating-point
-   tolerance throughout the inspected prefix (through elapsed 77.913 s).
-   Row 1670 has epoch `1479775442720`, elapsed 55.011 s, and both camera
-   triggers transition to 1: **an exact match to the first C2 JPEG identifier**.
-6. AR and AW first transition from 0 to 1 at row 1822, epoch `1479775447736`,
-   elapsed 60.027 s; they return to 0 at row 2099, elapsed 69.168 s.
-   The first JPEG therefore precedes the first sampled electrical enable by
-   5.016 s. This is a derived event offset, not measured optical ignition delay.
+## Extracted frames and sensor records
 
-A candidate registration is `(image_id - 1479775447736) / 1000` seconds relative
-to that **sampled electrical-enable event**, or `(image_id - 1479775387709) / 1000`
-relative to workbook elapsed zero. These transformations are supported at the
-start event only; check later shared events, clock drift, timestamp semantics,
-exposure timing and acquisition latency before accepting the entire sequence.
-Do not call the formatted timestamps verified UTC without clock documentation.
-The optical ignition onset, positional origin and start of a steady regime remain
-unverified. The current 3D's virtual time zero is none of these events.
+| Record | Count | First / last epoch-like ID | Span | Median / maximum interval |
+|---|---:|---|---:|---:|
+| JPEG part 1 | 5,000 | 1479775442720 / 1479775609340 | 166.620 s | 33 / 47 ms |
+| JPEG part 2 | 4,600 | 1479775609373 / 1479775762661 | 153.288 s | 33 / 45 ms |
+| Combined onboard JPEG | 9,600 | 1479775442720 / 1479775762661 | 319.941 s | 33 / 47 ms |
+| Sensor rows 3–11365 | 11,363 | 1479775387709 / 1479775762655 | 374.946 s | 33 / 41 ms |
 
-The three decoded source images (first, part-1 index 2500, and last) are 674 × 148
-pixels and mostly dark, with sparse visible signal in the middle example. They
-do not establish a measurable full-burn flame boundary. Inspect exposure/LED
-cycles and event-centered frames before deciding whether front/base tracking is feasible.
+All images decode to **674 × 148 pixels**. The archive join is 33 ms. Both image
+and sensor records have zero duplicate IDs and zero gaps over twice their own
+median positive interval. This establishes archive coverage, not full-burn coverage
+or independent delivery completeness. The received-image manifest was not retrieved.
 
-## Published quantities and spatial calibration
+The workbook's `Calibrated Data` sheet has headers on row 1 and units on row 2.
+Its declared range reaches row 32601, but rows 11366–32601 have no epoch value:
+**21,236 rows were excluded**, not turned into observations. Cached values and source
+units are retained verbatim, including missing cells. The worksheet name does not
+certify this project's calibration or every sensor's quality.
 
-The original target remains [Urban et al. (2019)](https://doi.org/10.1016/j.combustflame.2018.10.012).
-The original full PDF was not found locally; publisher retrieval returned 403,
-and the indexed publisher preview does not expose the target result passage.
-The existing Sample 5 `Vf` and `lp` records, including inherited p.177, therefore
-remain **unverified exact transcriptions**. No values or pagination were corrected.
-A source owner/library copy or author-provided manuscript with verifiable page
-mapping is the minimal next step; do not fit a value from a plot to fill this gap.
+Recovered channels include CO2/O2 (F/G, `%`), anemometers (H/I, `cm/sec`), ambient
+pressure (J, `PSIA`), radiometers (K–N, `mw/cm^2`), inlet/plume/sample temperatures
+(P–AB, `Degrees C`), igniter current/voltage (AG/AH, `Amps`/`Volts`), electrical
+controls and LED power. Channel labels do not establish sensor spatial locations,
+response delays or which thermocouple measures a particular flame region.
 
-The original [NASA presentation, 20180005168.pdf](https://ntrs.nasa.gov/api/citations/20180005168/downloads/20180005168.pdf),
-p.30 Table 1 row II-5, supports the sample length/width already held in the
-reference JSON. Its p.31 reports a differently rounded spread-rate figure;
-it does not verify the exact Urban pair. Published quantities remain owned by
-`data/scientific_reference_results.json`, not new audit presets. Thickness is
-also unresolved across the Readme and NASA presentation (see the earlier
-[parameter/source-conflict audit](urban-reproducibility-audit.md)); planar geometry
-agreement must not be described as verification of the full 3D sample geometry.
+## Temporal registration: what was checked
 
-The grid entry is `SAFFIRE-II_S5C2_DistortionGrid-30mmBlock_674x148_color.tif`.
-Its image was inspected. The filename identifies a nominal block size; it does
-not establish a validated scale. Required: documented block-size meaning,
-raw-image ROI/crop and lens mapping, matching optical plane, sample corners and
-longitudinal axis, camera orientation, raw-versus-mapped transformation, and
-independent residual/uncertainty checks. Do not use sample dimensions alone to
-rescale a crop. No pixel-to-mm measurement or automatic calibration was performed.
+A4 explicitly contains `A3+(B4-B3)/1000`. Throughout all timestamped rows, cached
+elapsed time agrees with `(epoch - 1479775387709)/1000` to a maximum numerical
+residual of 4.56e-11 s. This is formula consistency, not timing precision.
 
-## Minimal validation plan and decision gates
+| Event | Source cells / row | First sampled new state | Meaning |
+|---|---|---:|---|
+| C2 trigger rises | BE1670, B1670 | 1479775442720; elapsed 55.011 s | Exactly equals first JPEG ID |
+| C2 trigger falls | BE1673 | elapsed 55.110 s | End of the initial pulse, not end of imaging |
+| Igniter enable and select 5 rise | AR1822, AW1822 | 1479775447736; elapsed 60.027 s | Electrical command; **not optical ignition** |
+| Igniter enable and select 5 fall | AR2099, AW2099 | 1479775456877; elapsed 69.168 s | Electrical command ends |
 
-1. Recover the original Urban paper and verify both exact quantities, definitions,
-   averaging interval and geometry/uncertainty. Preserve conflicts separately.
-2. After those checks, retrieve only the two C2 JPEG parts, matching grid and
-   Sample 5 sensor workbook. Check full-archive hashes/CRC, manifest completeness,
-   decoding, missing frames, and optical coverage from before ignition through
-   termination. Add C1 only if the full path is outside C2's documented view.
-3. Review the electrical timestamp bridge against camera/igniter telemetry and
-   optical onset. Establish explicit event definitions, exposure/clock uncertainty,
-   and registration across the whole record; never equate first frame with ignition.
-4. Manually validate the camera/ROI-specific spatial transform. Independently
-   annotate pyrolysis front/base on suitable illuminated frames, with uncertainties
-   and exclusion flags for gaps/occlusion. A luminous envelope is not `lp`.
-5. Predeclare a held-out, observed steady interval and compare registered front,
-   base and length in common units, with uncertainty-based acceptance criteria.
-   If published `Vf`/`lp` drive the animation, matching them is a reconstruction
-   consistency check, **not independent validation of predictive physics**.
-6. Keep whole-burn and steady-window results separate. The current 3D implements
-   only a virtual constant-speed window, without ignition or termination dynamics.
-   Acquiring a complete experiment cannot make that renderer a whole-burn model.
-   Full-burn predictive validation needs a separately justified transient capability;
-   it is outside this audit and is not implemented.
+The electrical rising edge is bracketed by rows 1821–1822, epochs
+1479775447703–1479775447736 (33 ms sampling bracket, excluding hardware latency).
+The first image is **5.016 s before the first sampled electrical enable**.
+Candidate transforms are:
 
-**Decision:** a promising C2 acquisition and an exact initial telemetry bridge
-are identified. Synchronizing the existing 3D and claiming full experimental
-validation remain blocked by source review, spatial calibration, full-record
-clock/coverage checks, independent measurements and model scope.
+- workbook coordinate: `(image_id - 1479775387709) / 1000` seconds;
+- electrical-enable coordinate: `(image_id - 1479775447736) / 1000` seconds.
+
+The maximum nearest-sensor timestamp distance is 17 ms. **This is not a measured
+synchronization error:** dense sampling alone produces small nearest-neighbor
+residuals. The final image is 6 ms beyond the final sensor timestamp and is flagged
+outside coverage; it is not silently interpolated or treated as simultaneous.
+
+Independent visual spot checks also compared green illumination with `BC` (`LED
+Power 1`) at five times distributed across the record. The following images
+visually show the respective on/off condition, matching the nearest telemetry row:
+
+| On JPEG ID / BC row (state 1) | Off JPEG ID / BC row (state 0) |
+|---|---|
+| 1479775448820 / 1855 | 1479775449320 / 1870 |
+| 1479775488803 / 3066 | 1479775489317 / 3082 |
+| 1479775588801 / 6097 | 1479775589308 / 6112 |
+| 1479775688800 / 9127 | 1479775689300 / 9142 |
+| 1479775760794 / 11309 | 1479775761294 / 11324 |
+
+These coarse checks support the candidate mapping from early to late acquisition.
+They are not a pulse-edge fit or a quantified drift/latency bound. The C2 trigger
+has only one rising pulse, so it supplies no second independent trigger anchor.
+Clock semantics, exposure midpoint/duration, camera gain and capture latency need
+source documentation and reviewed LED edge correspondences before certification.
+Neither UTC nor the current renderer's virtual origin is verified.
+
+**Optical ignition remains unset.** Event-centered images show changing illumination
+and right-edge luminous signal, but reviewed frames do not establish the first
+self-sustained gaseous flame separately from igniter emission and crop boundaries.
+No brightness threshold was promoted into an ignition detector. Green LED light,
+saturation and dark frames must be separated from flame/pyrolysis observations.
+
+## Urban 2019 and verified parameters
+
+The [publisher article](https://www.sciencedirect.com/science/article/pii/S0010218018304395)
+remains a preview, without the target passage or a retrieved full PDF. The
+[Edinburgh author record](https://www.research.ed.ac.uk/en/publications/flame-spread-effects-of-microgravity-and-scale/)
+links to the publisher and DOI, with no downloadable manuscript. A renewed HAL API
+query for `hal-02042950` returns an article record without `fileMain_s` or `files_s`.
+Targeted repository searches did not locate a full copy of this exact article;
+papers citing it are not substitutes. No author was contacted or purchase made.
+
+Thus **neither exact Sample 5 `Vf` nor `lp` has been directly verified**, including
+its printed page, definition, averaging window and uncertainty. The inherited
+Published reference records remain unchanged in `scientific_reference_results.json`.
+The NASA presentation is a different source and does not verify the exact pair.
+The original PDF or an accessible author manuscript with locatable figures/text
+is still required; a manuscript must not inherit guessed journal page numbers.
+
+Verified here: file sizes, hashes, image dimensions/counts/continuity, numeric
+sensor availability, elapsed-time arithmetic, electrical-event brackets and the
+initial camera/image equality. Previously source-reviewed geometry/flow conditions
+retain their provenance in the [parameter audit](urban-reproducibility-audit.md).
+Their thickness conflict is unresolved; none supplies image calibration.
+
+## Required calibration and correspondences
+
+The recovered TIFF is
+`SAFFIRE-II_S5C2_DistortionGrid-30mmBlock_674x148_color.tif`, also 674 × 148 pixels.
+Readme p.3 describes these as preflight checkerboard distortion grids. The nominal
+block size in the filename alone is insufficient for a validated metric transform.
+
+| Requirement | Exact missing evidence / review |
+|---|---|
+| Grid physical coordinates | Confirm what `30mmBlock` measures, its uncertainty, grid plane and preflight-to-flight optical stability |
+| C2 image formation | Intrinsics/lens distortion or documented mapping, full-sensor ROI/crop offsets, orientation and product-specific transforms |
+| Pixel-to-sample correspondence | Reviewed grid intersections with physical coordinates, sample corners/visible bounds, longitudinal axis and origin in the same plane |
+| Transform validation | Fit distortion/planar mapping with sufficient distributed controls; check held-out points, residuals and propagated uncertainties; explicit human review |
+| Observable definition | Distinguish luminous flame front, pyrolysis front and burnout/base; `lp` is not automatically the luminous envelope length |
+| Measurement series | Independent front/base annotations, timestamps, LED/exposure/occlusion flags, uncertainty and a predeclared steady interval |
+| 3D comparison coordinates | Reviewed projection of the same planar observable into the renderer, spatial/time origins and a common camera view |
+
+A single C2 view cannot uniquely recover volumetric flame depth. The defensible
+first target is a calibrated planar front/base trajectory displayed in 3D with
+its out-of-plane geometry explicitly schematic. A true volumetric reconstruction
+needs additional geometric constraints or views, outside this C2-only scope.
+Sample dimensions cannot be used to stretch an unverified crop into a scale.
+
+## Comparison achieved and remaining gates
+
+**Achieved:** original-image integrity/coverage checks, complete numeric telemetry
+extraction, candidate timestamp pairing and qualitative LED/telemetry agreement.
+**Not achieved:** a metric front/base trajectory, a reconstructed 3D flame, an
+observed-versus-reconstructed residual, or a fidelity percentage. The report keeps
+`trajectory` and `fidelity_error` null and calibration pending. No runtime API,
+model, renderer or scientific reference value was changed.
+
+Required next: original Urban passage; delivery manifest if full delivery is
+claimed; reviewed timing edges and optical onset; C2 calibration/control points;
+independent annotations and comparison tolerances. Published Vf/lp-driven animation
+would be a reconstruction consistency check, not independent predictive validation.
+The current steady schematic supplies no measured ignition/termination dynamics.
+
+## Reproduction and verification
+
+No dependencies were added. From the repository root:
+
+```bash
+uv run python -m pipeline.validate_s5c2 --root SAFFIRE-local-validation
+# Optional NEW summary path; an existing file is refused to protect prior evidence:
+uv run python -m pipeline.validate_s5c2 --root SAFFIRE-local-validation --summary /tmp/s5c2-review.json
+uv run pytest -q
+uv run ruff check pipeline backend tests
+cd frontend && npm run lint && npm run build
+```
+
+Missing/invalid source files produce warnings and an unavailable/blocked report.
+Existing runtime catalogs are never regenerated from this isolated acquisition.
+Originals and full sensor/image exports stay ignored by Git; the small generated
+summary is the review artifact. See [schemas](data-dictionary.md#s5c2-validation-audit)
+and [lineage](data-lineage.md#focused-sample-5c2-extraction).
+
+Verification: 217 Python tests passed, one existing raw-TIFF-dependent test skipped;
+Ruff, frontend lint/build and whitespace checks passed. The six new synthetic tests
+check source-cell preservation, sampled-event brackets, missing inputs, gaps,
+variant isolation and refusal to infer physical validation. Existing warnings:
+Starlette/httpx deprecation, Node 20.18.1 below Vite's supported version, and the
+large Three.js bundle. Software checks do not establish experimental validation.

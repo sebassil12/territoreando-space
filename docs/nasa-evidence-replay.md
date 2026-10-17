@@ -130,9 +130,12 @@ changes were made in this increment.
 ## Follow-up validation audit
 
 The [first experimental-comparison audit](saffire2-validation-audit.md) located
-the missing original C2 JPEG parts and Sample 5 telemetry in PSI-99. Bounded
-inspection verifies an initial image/trigger timestamp bridge and identifies the
-electrical-enable event. Full-record registration, optical ignition, calibration
-and exact Urban references remain unresolved. These external audit findings are
-not imported into runtime data; the current schematic-only comparison and disabled
-synchronization remain correct. See the audit for the minimal acquisition plan.
+and recovered both original C2 JPEG parts and the complete Sample 5 telemetry from
+PSI-99. All 9,600 JPEGs and 11,363 timestamped sensor rows were extracted into
+ignored local storage. Full-record arithmetic and qualitative LED checks support
+candidate epoch pairing; electrical enable remains distinct from optical ignition.
+Calibrated registration, independent front/base measurements and exact Urban
+references remain unresolved. These originals are not the mapped variants used by
+the existing runtime catalogs; setting `SAFFIRE_RAW_DIR` to the acquisition folder
+does not restore those catalogs' images. The current schematic-only comparison
+and disabled synchronization remain correct. See the audit for exact blockers.

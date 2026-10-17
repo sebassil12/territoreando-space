@@ -149,7 +149,7 @@ Todas las respuestas: `{ "data", "source", "warnings", "quality" }`.
 ## Qué está disponible y qué falta
 - **Disponible:** resultados publicados de urban2019 y del DoD como hallazgos citados; condiciones por muestra
   (material, espesor, flujo, ignitor; O₂ y presión solo donde la fuente los reporta); 21 secuencias de imagen locales.
-- **Falta:** datos de sensores como números (O₂, CO₂, presión, temperaturas; `F-data-006`); ≈71 % de los JPEG recibidos
+- **Missing from runtime catalogs:** numeric sensor data (Sample 5 is now recovered offline; see the [focused audit](docs/saffire2-validation-audit.md)); ≈71 % de los JPEG recibidos
   (`F-data-002`); imágenes de las muestras 2 y 7 y del pre-flujo; calibración píxel→mm validada (`F-data-005`).
 
 ## Limitaciones de los datos (resumen)
@@ -245,3 +245,11 @@ See [evidence audit, API and remaining requirements](docs/nasa-evidence-replay.m
 `GET /api/twin/evidence-replay` supplies the additive comparison catalog. Restore
 `descompressed/` or set `SAFFIRE_RAW_DIR` for actual images; committed catalog
 availability is historical. No new dependencies or scientific model were added.
+
+The separate [Sample 5/C2 acquisition audit](docs/saffire2-validation-audit.md)
+recovers 9,600 onboard JPEGs and 11,363 timestamped sensor rows into ignored local
+storage. Run `uv run python -m pipeline.validate_s5c2` to reproduce the extraction
+and candidate timing checks. The generated review summary is
+`data/processed/s5c2_validation.json`; no dependencies were added. These originals
+do not replace the runtime mapped-image catalogs. Spatial calibration, optical
+ignition and direct Urban Vf/lp verification still block a quantitative 3D comparison.

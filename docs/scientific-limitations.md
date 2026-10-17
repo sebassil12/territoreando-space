@@ -17,7 +17,7 @@ riesgo de incendio, ni un gemelo digital, ni un sistema de seguridad certificado
 | Tasas a partir de series Mapped TIFF | No apto | Huecos de hasta 183 s; intervalo mediano de 167 ms (no 33 ms). |
 | Significado de "BIT", "ICMAD", grupos "F" | Documentado | DoD Tabla 4 (BIT = Built-In Test, no son quemas; ICMAD = anotación de exposición/ganancia); DoD tras la Figura 1 (F1/F2). |
 | Cobertura temporal de las quemas | Parcial | Solo ≈28,8 % de los JPEG recibidos está en local (manifiesto xlsx); S9 local cubre ≈167 s de 900 s. |
-| Sensor data (O2, CO2, pressure, temperatures) | Not loaded into runtime catalogs | Sample 5 numeric workbook located remotely; bounded telemetry inspected in the [validation audit](saffire2-validation-audit.md). Earlier local assets are raster plots only. |
+| Sensor data (O2, CO2, pressure, temperatures) | Recovered offline for Sample 5; not loaded into runtime catalogs | Complete workbook extracted to local CSV with source rows and units; see the [validation audit](saffire2-validation-audit.md). Sensor spatial assignments and response delays still require documentation. |
 
 ## Artefactos conocidos que afectan las métricas de píxeles
 - **Iluminación con LED verde** durante 0,4 s cada 2 s (urban2019 p.173) ilumina toda la muestra; los picos de brillo
@@ -193,12 +193,17 @@ unavailable; no automatic promotion to validation is possible through metadata.
 
 ### Experimental validation preparation: updated source availability
 
-The [focused Sample 5/C2 audit](saffire2-validation-audit.md) found remote onboard
-JPEG archives and numeric sensor data, with an exact first-image/camera-trigger
-epoch match. Previous statements about unavailable sensor numbers refer to the
-checkout/runtime catalogs, not absence from NASA PSI. A sampled electrical-enable
-event is not optical ignition; the initial match does not establish exposure
-latency, clock stability or alignment with the 3D's virtual steady window.
+The [focused Sample 5/C2 audit](saffire2-validation-audit.md) recovered both onboard
+JPEG archives and the complete sensor workbook in ignored local storage. All
+9,600 frames decode; 11,363 timestamped sensor rows were extracted. An exact
+first-image/camera-trigger epoch match and five visual LED on/off pairs support
+candidate registration. Sensor numbers remain outside runtime catalogs.
+A sampled electrical-enable event is not optical ignition; arithmetic and coarse
+LED agreement do not establish exposure latency, quantified clock stability or
+alignment with the 3D's virtual steady window. The final frame lies 6 ms beyond
+sensor coverage and is flagged. Calibration remains pending, and C2 alone cannot
+uniquely recover volumetric depth. The first feasible target is a calibrated
+planar front/base trajectory displayed with explicitly schematic depth.
 Source-checked length/width also do not resolve conflicting thickness reports.
 The existing reference-driven renderer cannot independently validate its own input
 values or represent the entire ignition-to-termination experiment.

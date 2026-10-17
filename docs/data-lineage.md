@@ -176,9 +176,25 @@ index independent of the schematic renderer and preserves processing variants.
 
 ### External validation-audit evidence
 
-The [Sample 5 audit](saffire2-validation-audit.md#verified-sample-frame-and-time-chain)
-checks original JPEG identifiers against the mapped part-1 catalog and locates the
-first-image epoch in NASA's sensor workbook. ZIP directories and bounded XML/image
-ranges were inspected in temporary storage only. No catalogs were regenerated and
-no timestamp transform was added to the API; filename-relative runtime time remains
-unchanged. Native sensor RAW, onboard JPEG and mapped products remain distinct.
+The [Sample 5 audit](saffire2-validation-audit.md#temporal-registration-what-was-checked)
+now checks complete original JPEG archives and the complete sensor workbook locally.
+No runtime catalogs were regenerated and no timestamp transform was added to the
+API; filename-relative runtime time remains unchanged. Native sensor RAW, onboard
+JPEG and mapped products remain distinct.
+
+### Focused Sample 5/C2 extraction
+
+`SAFFIRE-local-validation/originals/` (ignored, read-only after acquisition)
+→ `pipeline/validate_s5c2.py` + `sensor_workbook.py` + `s5c2_timing.py`
+→ local images, sensor CSV, frame CSV and audit JSON.
+Only the small generated summary is retained as
+`data/processed/s5c2_validation.json`; it is not consumed by FastAPI or React.
+This isolated acquisition cannot overwrite the existing full-mission catalogs.
+
+The stdlib ZIP/XML reader resolves the worksheet relationship and reads cached
+cells without evaluating formulas. CRC and image decoding check every recovered
+frame; source hashes identify exact inputs. Candidate epoch pairing keeps the
+original spreadsheet row and flags frames beyond sensor coverage. No spatial
+scale, optical ignition, trajectory or 3D score is inferred. Missing inputs yield
+warnings and an unavailable/blocked audit. Reproduction commands and checks are
+owned by the [focused audit](saffire2-validation-audit.md#reproduction-and-verification).

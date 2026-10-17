@@ -18,7 +18,10 @@
 | findings | `data/processed/findings.json` | hallazgos transcritos a mano con cita | API `/api/findings*`, asistente |
 | sample_conditions | `data/processed/sample_conditions.csv` | condiciones por muestra con cita | API `/api/conditions`, `/api/compare` |
 
-Not present in the checkout: `i_Investigation.txt`, `s_PSI-99-2.txt` and the sensor workbooks cited in the DoD. The Sample 5 workbook has now been located remotely and partially inspected; see the validation audit below.
+Not present in the default `descompressed/` directory: `i_Investigation.txt`,
+`s_PSI-99-2.txt` and the sensor workbooks cited in the DoD. The complete Sample 5
+workbook and both C2 JPEG archives are now recovered in the ignored
+`SAFFIRE-local-validation/originals/` directory; see the validation audit below.
 
 ## Model and reproducibility-audit sources
 
@@ -88,8 +91,15 @@ outside the repository; no raw data was committed or modified.
 
 The [focused acquisition and registration audit](saffire2-validation-audit.md)
 identifies versioned S5C2 onboard-JPEG parts, the matching distortion grid, Sample 5
-sensor workbook and received-image manifest. NASA archive directories and bounded
-workbook ranges were inspected directly, without downloading complete datasets.
-An exact first-frame/camera-trigger epoch match was found. This does not register
-the virtual 3D clock or verify optical ignition. Exact Urban Vf/lp review remains
-blocked; source geometry agreement covers length/width, not disputed thickness.
+sensor workbook and received-image manifest. Both JPEG archives and the complete
+Sample 5 workbook were downloaded with user authorization; the local grid and
+Readme were reused. All source CRCs, 9,600 decoded frames and 11,363 timestamped
+sensor rows were checked. Versioned links, sizes, hashes and exact local paths
+are recorded in the audit and generated `data/processed/s5c2_validation.json`.
+The manifest remains remote and uninspected in this increment.
+
+The first-frame/camera-trigger epoch match and five visual LED on/off pairs support
+a candidate time correspondence, without certifying clock drift, optical ignition
+or the virtual 3D origin. A renewed publisher/Edinburgh/HAL search did not retrieve
+a full Urban 2019 copy; exact Vf/lp review remains blocked. Source geometry
+agreement covers length/width, not disputed thickness or camera calibration.
