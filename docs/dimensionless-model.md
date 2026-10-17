@@ -122,7 +122,14 @@ Unit tests check source-balance consistency, thermal limits, branch boundaries, 
 stability and invalid inputs. API tests check contracts, provenance and operation without assets.
 **Synthetic tests verify software mathematics, not experimental validity.**
 
-Pending: frontend integration, dimensional parameters and their documented conventions,
+The React **Digital Twin** tab now implements scenario entry, assessment and this
+mathematical evaluation, with source/quality/warnings and exact research-model blockers.
+Its orbital 3D schematic uses a fixed illustrative flame, not to scale and unrelated
+to model outputs; edits invalidate results. Only two numeric inputs appear in the
+main guided flow; source conditions are explicitly accepted when choosing the setup. See the
+[implemented builder](scenario-engine.md#implemented-scenario-builder).
+
+Pending: dimensional parameters and their documented conventions,
 scientific validation, 1D evolution, and further models. Urban, thick-fuel branches, material
 presets, temperature, heat release, risk and CFD are not implemented. A SAFFIRE concurrent-flow
 reference must not be used to validate this opposed-flow model as if the configurations matched.

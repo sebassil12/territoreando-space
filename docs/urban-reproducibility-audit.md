@@ -120,3 +120,12 @@ The external Readme also documents sample/camera naming and processing terms
 on pp.2–3. Those research sources are not integrated into runtime catalogs;
 they do not validate any pixel-to-length mapping or permit deriving rates
 across temporal gaps. No raw files or new reference values were committed.
+
+
+## Later observation-data audit
+
+The [2026-10-17 Sample 5/C2 audit](saffire2-validation-audit.md) locates remote
+numeric telemetry and an initial image/trigger timestamp match. This updates
+observation availability, not the analytical reproduction decision above. Sensor
+channels do not by themselves supply the model's complete thermal inputs, validate
+image-derived measurements or independently verify the original Vf/lp passage.

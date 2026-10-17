@@ -1,6 +1,6 @@
 # Scenario Engine
 
-Status: **first backend increment implemented**. The engine decides which existing or
+Status: **backend, guided React Scenario Builder and schematic 3D implemented**. The engine decides which existing or
 research model can answer a requested question, with which evidence and outputs.
 It does not add physics, material constants, numerical presets or validation.
 Scientific boundaries: [limitations](scientific-limitations.md).
@@ -9,13 +9,13 @@ Scientific boundaries: [limitations](scientific-limitations.md).
 
 | Status | Current scope |
 |---|---|
-| **IMPLEMENTED** | Version 1 contracts, three-model registry, deterministic assessment, unit/provenance checks, per-output selection/refusal, revision fingerprints, and adapter to existing dimensionless mathematics |
+| **IMPLEMENTED** | Version 1 contracts, three-model registry, deterministic assessment, unit/provenance checks, per-output selection/refusal, revision fingerprints, existing dimensionless adapter, and guided React Scenario Builder with interactive schematic 3D |
 | **BLOCKED** | 2016 and Urban evaluation; dimensional predictions; documented-experiment evaluation without reviewed inputs; unsupported physical outputs |
-| **PENDING** | Reviewed parameter/derivation records, dimensional conversion adapters, frontend editor, sweeps, calibrated visual twin, original Urban equation pagination and complete reproduction audits |
+| **PENDING** | Reviewed parameter/derivation records, dimensional conversion adapters, sweeps, calibrated dynamic visual twin, original Urban equation pagination and complete reproduction audits |
 | **VALIDATED** | No initial model has experimental validation by this project. Equations and software checks are verified separately; passing tests does not change this status. |
 
 No new physical evaluator, material lookup, scientific constant, preset, database,
-frontend or raw-data derivation was added.
+or raw-data derivation was added.
 
 ## Architecture
 
@@ -287,11 +287,11 @@ Unavailable implementation and incompatible output are reported with their own
 codes even when scientific inputs are complete; missing evidence is not a generic
 catch-all. The response identifies all blockers instead of stopping at the first.
 
-## Future frontend and visual twin connection
+## Frontend and future dynamic visual twin connection
 
 React edits a draft scenario and displays assessment before evaluation. Users
 can vary oxygen, airflow, pressure, material and geometry as explicit values or
-explicit hypothetical sweep ranges; no scenario presets, slider ranges or
+future explicit hypothetical sweep ranges; no scenario presets, slider ranges or
 material constants are invented. Numerical inputs can remain blank/unknown.
 Expose a control as a physical sensitivity only when the selected model has a
 complete consumed-input dependency. Otherwise show the control as context with
@@ -302,13 +302,14 @@ evidence separately. Results show units, assumptions and source locators next to
 the value. Published references remain in the separate Scientific context view;
 comparison requires compatible conditions and never fits inputs to match them.
 User-edited conditions invalidate dependent source properties and prior results.
-Sweeps assess every case; a failed case is labelled unavailable, never filled
+Future sweeps must assess every case; a failed case is labelled unavailable, never filled
 with zero or interpolated into a supposedly physical result. Existing evaluation
 batch behavior remains unchanged; a future sweep layer handles case outcomes.
 
-Initially a visual twin may show hypothetical sample geometry and a separately
-labelled numerical chart. Capability metadata explicitly denies physical image
-overlays, animated flame propagation and temperature/heat-release/risk displays.
+The guided interface shows a generic 3D sample, a fixed illustrative flame symbol
+and separately labelled mathematical results. Capability metadata explicitly denies
+physical image overlays, predicted flame shape, animated propagation and
+temperature/heat-release/risk displays. Display geometry does not change these gates.
 A steady 0D result supplies neither a position nor an evolution equation.
 
 Future measured overlays require documented sample/sequence mapping, one
@@ -346,8 +347,31 @@ scenario_engine.py. The following items describe the delivered scope.
   outputs; the two research models remain unevaluable with explicit reasons;
   edits to unsupported common controls produce no claimed physical sensitivity.
 
-The frontend, sweep layer and visual twin remain **PENDING**. The two dimensional
+The backend increment is now consumed by the implemented frontend below. Sweeps
+and a calibrated dynamic visual twin remain **PENDING**. The two dimensional
 research evaluators remain **BLOCKED**, and experimental validation is absent.
+
+## Implemented Scenario Builder
+
+The **Explore a mathematical model** mode at `#Twin` uses a guided model-first flow and a central
+interactive Three.js scene. Only the selected model's inputs are exposed; the
+implemented dimensionless flow asks for `eta_g` and `radiation_number` only.
+Numeric fields start blank. Selecting a clearly labelled setup explicitly records
+its source conditions/assumptions, without converting context into model inputs.
+One action assesses the current revision and evaluates only if the engine permits it.
+
+Primary results show the ratio, mathematical state, explanation, source and quality.
+Advanced scenario conditions and Scientific details retain exact requirements,
+blockers, discriminant, warnings, versions and provenance. Every scientific edit
+invalidates previous results; aborted/late responses cannot restore them. The
+research evaluators remain blocked. Existing API contracts and physics are unchanged.
+
+The 3D is **schematic**, not a capability upgrade of the physical model. It receives
+only declared flow direction, gravity label and shape category. It never consumes
+numeric outputs, temperature or speed. Model capability flags for physical flame
+shape, overlays and time evolution remain false. The full classification of
+calculated mathematics, scenario-derived elements and presentation is owned by
+[Guided Digital Twin and schematic 3D](digital-twin-3d.md).
 
 ## Implemented API contract
 
@@ -472,3 +496,13 @@ temperature, heat release and fire risk are always false. unsupported_controls
 identifies common controls without implemented physical dependency adapters.
 missing_dependency and visual_capability_unavailable messages above describe
 future UI cases; current unsupported requests use output_not_supported.
+
+## Separate SAFFIRE playback capability
+
+The Twin also offers [published-reference playback](saffire-playback.md), served
+by separate GET endpoints. This is **IMPLEMENTED** derived steady kinematics
+from experimental references, not a fourth predictive model or an Urban evaluator.
+It does not alter registry availability, scientific validation or visual capability
+gates for scenario evaluation. Its trajectory contract is separate from
+ScenarioRequest; arbitrary oxygen/airflow/material inputs cannot modify published
+case values. Mathematical results retain `modelled_unvalidated`.

@@ -1,5 +1,7 @@
 // Diccionario español (por defecto) de la UI. Los valores del backend (hallazgos, advertencias, respuestas) no se traducen.
+import { scenarioMessages } from './i18n.scenario'
 export const es = {
+  ...scenarioMessages,
   'app.subtitle': '· Hallazgos citados de SAFFIRE-II',
   'app.views': 'Vistas',
   'app.language': 'Idioma',

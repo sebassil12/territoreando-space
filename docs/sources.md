@@ -18,7 +18,7 @@
 | findings | `data/processed/findings.json` | hallazgos transcritos a mano con cita | API `/api/findings*`, asistente |
 | sample_conditions | `data/processed/sample_conditions.csv` | condiciones por muestra con cita | API `/api/conditions`, `/api/compare` |
 
-No disponibles: `i_Investigation.txt`, `s_PSI-99-2.txt`, los Excel de sensores citados en el DoD.
+Not present in the checkout: `i_Investigation.txt`, `s_PSI-99-2.txt` and the sensor workbooks cited in the DoD. The Sample 5 workbook has now been located remotely and partially inspected; see the validation audit below.
 
 ## Model and reproducibility-audit sources
 
@@ -56,3 +56,40 @@ NASA PSI sources were inspected in temporary files, including the Readme's
 embedded Table 1 image and its page placement. No source files, scientific
 constants, sample mappings or new published results were added to runtime data.
 See [parameter inventory, source conflicts and independent calculation](urban-reproducibility-audit.md).
+
+## SAFFIRE playback source review
+
+The [playback catalog](saffire-playback.md) reuses Urban 2019 published-reference
+records with their inherited file/page locators. The original PDF remains
+unavailable for independent verification. SAFFIRE-3 pyrolysis length is promoted
+from an existing reference note with explicit lineage; no value or page is corrected
+or guessed. This does not change the analytical reproducibility audit.
+
+The primary NASA presentation
+[Urban et al., Saffire: A Novel Approach to Study of Spacecraft Fire Safety Using Un-manned Spacecraft](https://ntrs.nasa.gov/api/citations/20180005168/downloads/20180005168.pdf)
+includes position/rate plots (PDF p.17) and summary tables (pp.30–31). Plots have
+not been digitized into reviewed numeric time series. Differently rounded table
+rates are not mixed with the existing Urban reference pairs. No numeric values
+from this presentation are used to fill missing trajectory samples.
+
+## NASA Evidence Replay audit
+
+The [2026-10-17 replay audit](nasa-evidence-replay.md#evidence-audit-2026-10-17)
+checks the NASA presentation `20180005168.pdf`, p.30 Table 1, for sample geometry
+and p.31 for spread-rate comparison. Geometry provenance is stored in
+`scientific_reference_results.json` under each case's `replay_audit`. Exact Urban
+Vf/lp pairs remain unverified and are not used to animate the new replay mode.
+The PSI-99 Readme listed above, p.2 Table 2, supplies the sample/camera mapping;
+p.3 Table 4 identifies processing variants. The remote source files were reviewed
+outside the repository; no raw data was committed or modified.
+
+
+## First SAFFIRE-II validation preparation
+
+The [focused acquisition and registration audit](saffire2-validation-audit.md)
+identifies versioned S5C2 onboard-JPEG parts, the matching distortion grid, Sample 5
+sensor workbook and received-image manifest. NASA archive directories and bounded
+workbook ranges were inspected directly, without downloading complete datasets.
+An exact first-frame/camera-trigger epoch match was found. This does not register
+the virtual 3D clock or verify optical ignition. Exact Urban Vf/lp review remains
+blocked; source geometry agreement covers length/width, not disputed thickness.

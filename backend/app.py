@@ -21,8 +21,15 @@ from pydantic import BaseModel
 
 from backend import assistant
 from backend.envelope import envelope
+from backend.evidence_replay import SOURCE as REPLAY_SOURCE
+from backend.evidence_replay import WARNINGS as REPLAY_WARNINGS
+from backend.evidence_replay import compile_replay, mapped_groups, sequence_audit
 from backend.findings import load_store
 from backend.physics import evaluate_thin_branch
+from backend.playback import QUALITY as PLAYBACK_QUALITY
+from backend.playback import SOURCE as PLAYBACK_SOURCE
+from backend.playback import WARNINGS as PLAYBACK_WARNINGS
+from backend.playback import compile_playback
 from backend.routes.findings import build_findings_router
 from backend.scenario_contracts import (
     ScenarioAssessmentEnvelope,
@@ -135,6 +142,8 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
         metrics_by_seq[m["sequence_id"]].append(m)
     refs = json.loads(references.read_text(encoding="utf-8")) if references.is_file() else {"results": [], "facts": [], "sources": {}}
 
+    playback = compile_playback(refs)
+
     # secuencia primaria de cada variante de procesamiento (mismo group/camera, rango superpuesto)
     primary_of = {}
     for s in sequences.values():
@@ -157,6 +166,10 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
 
     store = load_store(processed, raw, sequences,
                        lambda sid: sequence_warnings(sequences[sid], primary_of, cal_status(sid)))
+    replay_groups = mapped_groups(refs)
+    replay_inventory = {sid: sequence_audit(seq_view(s), frames_by_seq[sid], raw)
+                        for sid, s in sequences.items() if s["group"] in replay_groups}
+    replay = compile_replay(refs, playback, replay_inventory)
     ctx = assistant.Context(sequences, frames_by_seq, metrics_by_seq, refs, cal_status, primary_of,
                             store.findings, store.conditions)
 
@@ -264,6 +277,25 @@ def create_app(processed: Path = PROCESSED, raw: Path = RAW, references: Path = 
             ))
         return envelope(data.model_dump(), SCENARIO_SOURCE, [*SCENARIO_WARNINGS, *WARNINGS],
                         "modelled_unvalidated")
+
+    @app.get("/api/twin/playback-cases")
+    def playback_cases():
+        available = any(case["status"] == "available" for case in playback["cases"])
+        return envelope(playback, PLAYBACK_SOURCE, PLAYBACK_WARNINGS,
+                        PLAYBACK_QUALITY if available else "unavailable")
+
+    @app.get("/api/twin/evidence-replay")
+    def evidence_replay():
+        return envelope(replay, REPLAY_SOURCE, REPLAY_WARNINGS,
+                        "qualitative_only" if replay["cases"] else "unavailable")
+
+    @app.get("/api/twin/playback-cases/{case_id}")
+    def playback_case(case_id: str):
+        case = next((item for item in playback["cases"] if item["case_id"] == case_id), None)
+        if case is None:
+            return JSONResponse(status_code=404, content=envelope(
+                {"error": "Unknown playback case."}, PLAYBACK_SOURCE, PLAYBACK_WARNINGS, "unavailable"))
+        return envelope(case, PLAYBACK_SOURCE, case["warnings"], case["quality"])
 
     @app.get("/api/health")
     def health():

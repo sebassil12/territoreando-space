@@ -119,3 +119,51 @@ also produces only in-memory JSON. Scenarios preserve original quantity/declarat
 provenance; assessments add normalized values, candidate evidence, missing inputs,
 per-output dispositions and revision fingerprints. They do not change CSV schemas
 or add modeled values to published-reference JSON.
+
+The React Scenario Builder mirrors these contracts in
+`frontend/src/scenarioTypes.ts` and serializes only registry-declared quantities
+in `frontend/src/scenario/scenarioDraft.ts`. Blank numbers remain omitted; an
+explicit zero remains a provided quantity. Units are explicit and fixed by the
+contract, and all editor entries retain `origin="user_assumption"`. Urban's
+alternative mass representation is selected explicitly; switching it removes
+the previous alternative's inputs. No constants or source values are supplied
+by the editor. Revisions invalidate previous assessment/results, and the
+fingerprint is sent unchanged for evaluation. The schematic is presentation,
+not another scientific data product. Producer/consumer tests use frontend-built
+requests with the actual backend registry; see [builder scope](scenario-engine.md#implemented-scenario-builder).
+
+The guided setup selector adds only explicit declarations/acknowledgments from the
+selected registry model; numeric fields remain blank. The 3D adapter exposes
+`flow`, `gravity` (label) and `shape` category, with no model result or quantity.
+Display orientation and camera settings are local presentation state, not scientific
+request fields or persisted evidence. See [3D classification](digital-twin-3d.md).
+
+## SAFFIRE playback schema v1
+
+The scientific-reference JSON adds `playback_cases`: case ID/label, Vf/lp reference
+IDs, source-review status and time-series availability. The optional
+`transcribed_from` and `verification` fields preserve inherited transcription
+lineage. Published numeric values remain only in the results catalog.
+
+Playback API envelopes contain derived data, not model evaluation results.
+Each evidence quantity retains source file/page, units and Published reference
+classification; each trajectory declares time/position units, local origins,
+formulas, duration and two **derived** anchors. Available quality is
+`derived_from_published_reference`; missing evidence gives `unavailable` and no
+trajectory. See [complete field contract](saffire-playback.md#api-and-failure-behavior).
+
+Playback v1 adds an explicit `airflow_direction` to case manifests and an `airflow`
+object to API cases: direction, original condition string, reference ID, file and
+page. Evidence quantities retain the original `flow` string. No new measured
+number or direction is inferred from images. Speed multipliers and shader art
+settings are view state, not scientific inputs or evidence.
+
+## NASA Evidence Replay metadata
+
+`scientific_reference_results.json` now includes NASA presentation and PSI-99
+Readme source records. Each playback case's `replay_audit` records review date,
+exact-pair verification status, comparison source/page, cited sample geometry and
+optional documented image mapping. Published dimensions remain in this reference
+file, separate from generated catalogs and renderer settings.
+See the [API contract](nasa-evidence-replay.md#api-and-provenance) for the additive
+`/api/twin/evidence-replay` fields, null registration and unavailable fidelity error.

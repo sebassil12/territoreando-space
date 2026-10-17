@@ -166,7 +166,8 @@ de la secuencia en lugar de `not_available`.
 | Twin increment 1 | Pure Bhattacharjee thin-fuel dimensionless branch; `/api/twin/models` and `/api/twin/evaluate`; unit/API tests and contract docs | implemented; equation verified, scientifically unvalidated |
 | Bhattacharjee 2016 investigation | Source/equation/parameter review for critical opposed-flow extinction velocity | investigated; equation verified; numerical reproduction incomplete; no implementation |
 | Urban 2019 reproducibility audit | Sample 5 analytical equation, input provenance and independent calculation review | audited sources insufficient; absolute speed/error unresolved; no implementation |
-| Scenario Engine | Version 1 contracts, registry, assessment, provenance/unit checks and dimensionless adapter | **IMPLEMENTED**; API only; research evaluators **BLOCKED**; [contract](scenario-engine.md) |
+| Scenario Engine | Version 1 contracts, registry, assessment, provenance/unit checks and dimensionless adapter | **IMPLEMENTED**; research evaluators **BLOCKED**; [contract](scenario-engine.md) |
+| Guided Digital Twin | Model-first React flow, two-input dimensionless form, simple results, Advanced/Scientific details, schematic orbital 3D and revision invalidation | **IMPLEMENTED** at `#Twin`; no numeric scientific defaults or dynamic physics; [scope](scenario-engine.md#implemented-scenario-builder) |
 
 Status vocabulary: **IMPLEMENTED** means available software; **BLOCKED** means
 evaluation is refused with explicit reasons; **PENDING** means planned work;
@@ -183,12 +184,16 @@ and does not alter offline evidence artifacts. See [dimensionless model API](dim
 Also implemented: registry and assessment of all three scenario models,
 exact-output selection, full blocker reports, scope/provenance checks, canonical
 units, scenario fingerprints, and routing only to the existing dimensionless
-branch. Existing endpoints retain their original contracts.
+branch. Existing endpoints retain their original contracts. The React builder now
+consumes these endpoints, preserves structured errors/provenance and rejects late
+responses after edits. Focused Node tests and Python tests of actual frontend-generated
+requests cover producer/consumer consistency; browser checks cover evaluation,
+edit invalidation, delayed responses, incompatibility and narrow-screen layout.
 
 Verified: equation transcription against NASA NTRS 20040053557, Eq. (5), printed p.202.
 Software tests cover algebraic behavior and API contracts; they are not experimental validation.
 
-Pending: React integration, documented dimensional parameters, experimental validation, and any 1D
+Pending: documented dimensional parameters, experimental validation, and any 1D
 evolution. Urban remains unimplemented; [the audit](urban-reproducibility-audit.md) verified Eq. (2) in
 publisher HTML, but its printed PDF page and required thermal inputs remain unresolved.
 Physical extinction diagnostics remain disabled because of
@@ -222,9 +227,64 @@ presets, fit constants to the target result, or implement an Urban evaluator now
 ## Next model increment
 
 The [first Scenario Engine increment](scenario-engine.md#first-implementable-increment)
-is **IMPLEMENTED**. The next software increment is **PENDING**: a frontend editor
-that consumes assessment, provenance, revision fingerprints and output capability
-gates. No physical animation or dimensional conversion follows automatically.
-Reviewed parameter/derivation records, complete reproduction audits and any new
-physical evaluator require separate work. The 2016 and Urban evaluators remain
-**BLOCKED**, including with complete hypothetical inputs.
+and [guided 3D Scenario Builder](digital-twin-3d.md)
+are **IMPLEMENTED**. The editor consumes assessment, provenance, revision fingerprints
+and output capability gates. Its orbital scene contains a fixed illustrative flame,
+generic sample and directional arrows. They are not to scale and represent no
+predicted flame dynamics. The mathematical scene never receives numeric physical inputs or
+outputs; presentation controls do not alter scientific provenance.
+
+The next increment is **PENDING**: define a source-backed transient/spatial model's
+applicability, complete parameters, initial/boundary conditions and time-dependent
+output contract before adding predictive physical animation. Reviewed parameter/derivation
+records and a reproducible benchmark are prerequisites for defensible dimensional
+predictions. Observation comparison additionally requires documented sample/sequence
+mapping, continuous timestamps and manually validated calibration. Software tests
+remain distinct from experimental validation. The 2016 and Urban evaluators remain
+**BLOCKED**, including with complete hypothetical inputs; this UI does not unlock them.
+
+## SAFFIRE playback increment
+
+**IMPLEMENTED:** version 1 playback catalog and case endpoints; source-based
+startup derivation; three selectable SAFFIRE cases; timeline/play/pause/reset;
+derived longitudinal 3D markers, envelope and traversed-region proxy.
+**EXPERIMENTAL:** published steady inputs, with inherited-transcription warning.
+**DERIVED:** local constant-rate anchors/positions and display duration.
+**SCHEMATIC:** flame cross-section/color and char appearance.
+**BLOCKED:** Urban/2016 analytical evaluators and general physical prediction.
+**PENDING:** independent PDF review, traceable time series and uncertainty,
+explicit gap handling and calibrated alignment; then source-backed transient
+outputs. **VALIDATED:** no experimental model.
+See [implemented playback contract and evidence](saffire-playback.md).
+
+## Procedural SAFFIRE rendering increment
+
+**IMPLEMENTED:** GPU core/envelope, flow-oriented procedural motion, background
+distortion, virgin/active/char surface, compact metrics and playback-rate controls.
+**EXPERIMENTAL / DERIVED / PHYSICS-DRIVEN:** existing published references and
+local kinematic mapping; no new physical evaluator. **PHYSICALLY-INSPIRED:**
+appearance and fluctuations. **SCHEMATIC:** transverse dimensions and view.
+**BLOCKED:** unsupported analytical models and quantitative flame/temperature
+predictions. **PENDING:** calibrated transient observations, physical appearance
+model and reproducible benchmark. **VALIDATED:** no experimental model validation.
+See [renderer implementation](digital-twin-3d.md#procedural-combustion-renderer-implemented).
+
+## NASA Evidence Replay status
+
+**IMPLEMENTED:** additive comparison endpoint and Twin mode; camera/variant
+selection; source-frame index; asset availability and gap warnings; cited geometry
+review; explicit observation/derived/visual classifications; schematic fallback.
+**BLOCKED BY EVIDENCE:** exact Urban Vf/lp review, calibrated motion comparison,
+synchronization and fidelity errors. **VALIDATED:** no scientific model.
+See [audit and remaining evidence requirements](nasa-evidence-replay.md).
+
+
+### Minimal first experimental-comparison plan
+
+Follow the [Sample 5/C2 decision gates](saffire2-validation-audit.md#minimal-validation-plan-and-decision-gates):
+verify the original publication, acquire the bounded C2 case, review telemetry/image
+registration, validate camera-specific calibration, and compare independently
+annotated held-out observations. Inspect the full experiment, but evaluate the
+current 3D only over a justified steady window. Whole-burn predictive validation
+requires capabilities the current renderer does not provide. Status: audit complete;
+experimental validation and all implementation changes remain pending.

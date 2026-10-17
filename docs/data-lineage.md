@@ -67,7 +67,8 @@ Catalog and reference data are loaded into memory at app startup. The frontend c
 
 The separate dimensionless model API accepts explicit user assumptions and evaluates a pure steady 0D
 equation in memory. This request-time calculation does not regenerate evidence catalogs or metrics,
-write outputs, or introduce a database, queue or service. There is no model frontend yet.
+write outputs, or introduce a database, queue or service. A separate React Scenario
+Builder consumes this API and displays an interactive schematic 3D without changing evidence artifacts.
 
 | Path | Responsibility |
 |---|---|
@@ -80,7 +81,7 @@ write outputs, or introduce a database, queue or service. There is no model fron
 | `backend/assistant.py` | Deterministic answers from catalogs and published references |
 | `backend/physics.py` | Pure dimensionless thin-fuel plus-root evaluation; no I/O |
 | `backend/simulation_contracts.py` | Versioned twin contracts and equation/source metadata |
-| `frontend/src/App.tsx` | Shell, navigation, overview, catalog, science, assistant and limitations |
+| `frontend/src/App.tsx` | Shell, navigation, overview, catalog, science, assistant, limitations and Digital Twin |
 | `frontend/src/Viewer.tsx` | Playback, provenance, frame detail and SVG metric chart |
 | `frontend/src/api.ts` | API types and fetch helpers |
 | `tests/` | Synthetic pipeline/model tests, evidence API/assistant tests, and asset-independent twin API tests |
@@ -101,7 +102,8 @@ versioned scenario → units/provenance checks → model requirements and applic
 assessment → eligible existing evaluator → result with evidence and visual capabilities.
 It remains within this FastAPI application and does not change the offline evidence
 pipeline. Registry, contracts, assessment and dimensionless routing are implemented;
-frontend controls and visual adapters remain pending. Evaluation routes only to
+guided frontend controls and schematic 3D are implemented. Dynamic physical
+visual adapters remain pending. Evaluation routes only to
 the existing dimensionless model; 2016 and Urban return blocker reports and no
 numerical results.
 
@@ -111,6 +113,14 @@ numerical results.
 | backend/scenario_registry.py | Three-model requirements, source citations and server-owned evidence status; no physical presets |
 | backend/scenario_engine.py | Pure unit normalization, applicability/requirements/provenance decisions, fingerprints and dimensionless adapter |
 | tests/test_scenario_engine.py | Selection/refusal, source scope, unreviewed provenance, unavailable models, stale revisions and API compatibility |
+| frontend/src/scenarioTypes.ts | TypeScript version 1 scenario/registry/assessment/evaluation contracts |
+| frontend/src/scenario/scenarioDraft.ts | Registry-only fields, explicit user assumptions, missing-input preservation and output readiness |
+| frontend/src/scenario/useScenarioBuilder.ts and requestGate.ts | Revision invalidation, abort/late-response protection and assessment-before-evaluation |
+| frontend/src/screens/ScenarioBuilder.tsx and frontend/src/scenario/ | Guided model choice, selected inputs, simple results, Advanced conditions and Scientific details |
+| frontend/src/scenario/guidedScenario.ts | Explicit setup acceptance with user-assumption provenance; scene adapter limited to direction, gravity label and shape |
+| frontend/src/scenario/ScenarioScene.tsx and scene/ | Lazy-loaded Three.js illustration, camera/display controls and GPU resource cleanup; no numeric physics dependencies |
+| frontend/tests/scenario.test.mjs | Focused UI logic, rendering and structured API-error tests using existing TypeScript tooling |
+| tests/test_scenario_ui_contract.py | Actual frontend-generated requests checked against the real registry and FastAPI |
 
 Requests follow: scenario → normalized units and retained original provenance →
 registry assessment → exact permitted output → reassessment/fingerprint check →
@@ -119,6 +129,56 @@ from request text is executed, and no evidence files are written. Assessment and
 registry responses have quality unavailable because they contain no numerical
 model result; successful evaluation has quality modelled_unvalidated.
 
-**IMPLEMENTED:** backend decisions and adapter. **BLOCKED:** research-model and
+React follows registry → explicit setup selection → blank numeric inputs → current
+assessment → fingerprint → eligible evaluation. Selecting the labelled setup records
+only its declared conditions and acknowledgments; it supplies no numeric values.
+Inputs remain user assumptions, not observations or published references. Every
+scenario edit clears assessment/results; stale responses cannot restore them.
+The mathematical scene adapter receives only flow direction, gravity label and shape category.
+Numeric model outputs stay in the result panel and never enter flame geometry or
+color. Camera and sample-display orientation affect presentation only. See the
+[3D data classification](digital-twin-3d.md#what-drives-the-3d).
+
+**IMPLEMENTED:** backend decisions, adapter and React Scenario Builder. **BLOCKED:** research-model and
 documented-experiment evaluation. **PENDING:** reviewed parameter/derivation records,
-frontend and visual twin. **VALIDATED:** no project experimental model validation.
+dynamic visual twin. **VALIDATED:** no project experimental model validation.
+
+## Published-reference playback lineage
+
+`data/scientific_reference_results.json` → `backend/playback.py` (startup-only
+reference validation and derived anchors) → `/api/twin/playback-cases` →
+`SaffirePlayback` → `usePlayback` / `kinematics` → `playbackObjects` → Three.js.
+The case manifest references published values by ID. It copies no constants into
+the frontend and does not read image sequences. SAFFIRE-3 lp is structured from
+its existing spread-rate notes with explicit transcription lineage.
+
+Published inputs, derived anchors and visual proxies carry distinct labels.
+The shared renderer isolates its playback adapter from mathematical scene inputs;
+no model registry gate changes. Case/mode changes dispose old playback state.
+See [source review, formulas, units and failure behavior](saffire-playback.md).
+
+The playback renderer now consumes frame time and longitudinal bounds as shader
+uniforms. Explicit case airflow direction feeds both the arrow and noise-advection
+sign; original flow condition text/file/page is passed through the API without
+parsing a new numeric parameter. Art coefficients stay in `playback/fire/shaders.ts`
+and never enter scientific results. Render targets contain temporary view pixels,
+not evidence artifacts. [Renderer lifecycle](digital-twin-3d.md#procedural-combustion-renderer-implemented).
+
+## Evidence Replay composition
+
+The [replay catalog](nasa-evidence-replay.md#api-and-provenance) is assembled once
+at API startup from the existing processed catalogs and the manually reviewed
+reference JSON. A read-only filesystem presence check supplements historical
+catalog availability. Existing frame endpoints provide images and stored pixel
+statistics; no scientific processing runs in a request. The UI keeps the image
+index independent of the schematic renderer and preserves processing variants.
+
+
+### External validation-audit evidence
+
+The [Sample 5 audit](saffire2-validation-audit.md#verified-sample-frame-and-time-chain)
+checks original JPEG identifiers against the mapped part-1 catalog and locates the
+first-image epoch in NASA's sensor workbook. ZIP directories and bounded XML/image
+ranges were inspected in temporary storage only. No catalogs were regenerated and
+no timestamp transform was added to the API; filename-relative runtime time remains
+unchanged. Native sensor RAW, onboard JPEG and mapped products remain distinct.

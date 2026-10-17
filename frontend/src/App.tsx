@@ -8,9 +8,10 @@ import { FindingsExplorer } from './screens/FindingsExplorer'
 import { Limitations } from './screens/Limitations'
 import { Ranked } from './screens/Ranked'
 import { SafetyOverview } from './screens/SafetyOverview'
+import { Twin } from './screens/Twin'
 
 // Claves internas de pestaña (en inglés) usadas en los enlaces por hash; solo se traduce la etiqueta.
-const TABS = ['Overview', 'Findings', 'Ranked', 'Compare', 'Evidence', 'Assistant', 'Limitations'] as const
+const TABS = ['Overview', 'Findings', 'Ranked', 'Compare', 'Evidence', 'Assistant', 'Twin', 'Limitations'] as const
 type Tab = (typeof TABS)[number] | 'Viewer'
 const DEFAULT_SEQUENCE = 'S1-C2-raw-jpeg-part1'
 
@@ -50,6 +51,7 @@ export default function App() {
         {tab === 'Evidence' && <Evidence />}
         {tab === 'Viewer' && <EvidenceViewer sequenceId={id ?? DEFAULT_SEQUENCE} />}
         {tab === 'Assistant' && <Assistant sequenceId={contextSequence} />}
+        {tab === 'Twin' && <Twin />}
         {tab === 'Limitations' && <Limitations />}
       </main>
     </div>

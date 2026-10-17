@@ -59,15 +59,61 @@ microgravedad y por qué importa para la seguridad en vuelos tripulados.
 
 ## Separate mathematical model scope
 
-- **IMPLEMENTED:** Scenario Engine backend and mathematical dimensionless evaluation,
+- **IMPLEMENTED:** Scenario Engine backend, guided React Scenario Builder, schematic 3D and mathematical dimensionless evaluation,
   independent of original assets and without scientific presets.
 - **BLOCKED:** Bhattacharjee 2016 and Urban 2019 evaluation, missing or conflicting
   essential inputs, unsupported outputs and documented experiments without reviewed
   parameter records. All causes are returned, including implementation/evidence gaps.
-- **PENDING:** frontend scenarios, sweeps, reviewed property/derivation records,
+- **PENDING:** sweeps, reviewed property/derivation records,
   dimensional conversions, complete reproduction audits and a calibrated visual twin.
 - **VALIDATED:** no physical model is experimentally validated by this project.
   Source equation checks and software tests establish different kinds of verification.
 
 
-The source-cited steady 0D model and Scenario Engine are separate from the findings UI. They produce hypothetical mathematical results only; there is no calibrated/synchronized digital twin, dimensional combustion simulation or physical risk prediction.
+The source-cited steady 0D model and Scenario Engine have a separate **Digital Twin**
+tab (`#Twin`). In mathematical exploration mode, users choose a labelled hypothetical setup and enter only the selected
+model's required numeric parameters. A central orbital 3D illustration accompanies
+a simple mathematical result; Advanced conditions and Scientific details retain
+scientific traceability. Scientific values have no defaults and edits invalidate
+results. The fixed flame symbol is schematic, with no model-produced spatial shape,
+color, motion or temperature. Only declared direction, shape category and gravity
+label reach the scene. There is no experimentally calibrated dynamic twin or risk
+prediction. Existing findings and observation playback retain their original scope.
+See [guided flow and 3D classification](digital-twin-3d.md).
+
+## Data-driven SAFFIRE playback
+
+**IMPLEMENTED:** Twin opens with an explicit experimental-case chooser for
+SAFFIRE-1, SAFFIRE-3 or SAFFIRE-2 Sample 5. It shows published reference Vf/lp,
+source/page/quality and a controlled local timeline. **DERIVED** front/base
+positions move the 3D; flame volume and char appearance remain **SCHEMATIC**.
+There are no traceable numeric time series loaded, so this is a steady-reference
+reconstruction, not a continuous experimental recording or CFD. Source review
+remains limited to inherited transcriptions. It does not unblock the analytical
+Urban model or establish experimental validation. Existing image playback,
+findings and unvalidated mathematics remain separate.
+See [scope, evidence and next increment](saffire-playback.md).
+
+The SAFFIRE view now uses **PHYSICALLY-INSPIRED** GPU fire, replacing its technical
+prism. **PHYSICS-DRIVEN** placement retains the same **DERIVED** steady kinematics
+and **EXPERIMENTAL** reference provenance. Compact metrics and scientific details
+keep the distinction visible. Playback speed is presentation control; neither
+shape nor color is quantitatively predicted. See
+[3D renderer boundaries](digital-twin-3d.md#procedural-combustion-renderer-implemented).
+
+## NASA Evidence Replay increment
+
+Implemented a separate Twin comparison mode with source-frame browsing, source
+and quality panels, and existing schematic 3D. Exact Vf/lp verification, calibrated
+spatial/temporal registration and quantitative fidelity remain blocked by missing
+evidence. See [the audit and implemented behavior](nasa-evidence-replay.md).
+Existing published-reference playback and mathematical exploration are preserved.
+
+
+### First experimental-validation preparation
+
+Documentation-only [Sample 5/C2 audit](saffire2-validation-audit.md) identifies
+original JPEG packages, a matching grid and sensor telemetry with an initial
+image/trigger timestamp correspondence. This is an acquisition/registration lead,
+not validated synchronization or new runtime data. Exact Urban reference review,
+full-burn coverage and spatial calibration remain pending. No functionality changed.

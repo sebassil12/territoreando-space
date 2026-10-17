@@ -1,4 +1,6 @@
 export type Envelope<T> = { data: T; source: string; warnings: string[]; quality: string }
+export type * from './scenarioTypes'
+import type { ScenarioAssessment, ScenarioEvaluation, ScenarioFailure, ScenarioRegistry, ScenarioRequest } from './scenarioTypes'
 
 export type Sequence = {
   sequence_id: string
@@ -154,8 +156,8 @@ export type Answer = {
   evidence_sources: string[]
 }
 
-export async function get<T>(path: string): Promise<Envelope<T>> {
-  const r = await fetch(path)
+export async function get<T>(path: string, signal?: AbortSignal): Promise<Envelope<T>> {
+  const r = await fetch(path, { signal })
   if (!r.ok) throw new Error(`${r.status}: ${(await r.json().catch(() => ({}))).detail ?? r.statusText}`)
   return r.json()
 }
@@ -169,3 +171,49 @@ export async function ask(question: string, sequence_id?: string): Promise<Envel
   if (!r.ok) throw new Error(`${r.status}`)
   return r.json()
 }
+
+export class ScenarioApiError extends Error {
+  status: number
+  response: Envelope<ScenarioFailure>
+  constructor(status: number, response: Envelope<ScenarioFailure>) {
+    super(response.data.error ?? response.data.errors?.map((e) => e.message).join('; ') ?? String(status))
+    this.status = status
+    this.response = response
+  }
+}
+
+async function scenarioFetch<T>(path: string, body: unknown, signal: AbortSignal): Promise<Envelope<T>> {
+  const response = await fetch(path, {
+    method: body === undefined ? 'GET' : 'POST', signal,
+    headers: { 'Content-Type': 'application/json' },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  })
+  const payload = await response.json()
+  if (!response.ok) throw new ScenarioApiError(response.status, payload)
+  return payload
+}
+
+export const loadScenarioModels = (signal: AbortSignal) =>
+  scenarioFetch<ScenarioRegistry>('/api/twin/scenario-models', undefined, signal)
+export const assessScenario = (scenario: ScenarioRequest, signal: AbortSignal) =>
+  scenarioFetch<ScenarioAssessment>('/api/twin/scenarios/assess', scenario, signal)
+export const evaluateScenario = (scenario: ScenarioRequest, fingerprint: string, signal: AbortSignal) =>
+  scenarioFetch<ScenarioEvaluation>('/api/twin/scenarios/evaluate', { scenario, assessment_fingerprint: fingerprint }, signal)
+
+export const loadPlaybackCases = (signal: AbortSignal) =>
+  scenarioFetch<import('./playback/types').PlaybackCatalog>('/api/twin/playback-cases', undefined, signal)
+
+export type ReplayCitation = { file: string | null; page: number | null; url: string | null; location?: string }
+export type ReplaySequence = Sequence & {
+  catalog_frame_count: number; local_frame_count: number; asset_status: string; timestamp_basis: string
+}
+export type ReplayCase = {
+  case_id: string; label: string; quality: 'qualitative_only'
+  reference_evidence: import('./playback/types').PlaybackCase['evidence']
+  reference_audit: ReplayCitation & { status: string; notes: string | null }
+  geometry: (ReplayCitation & { dimensions: string; status: string }) | null
+  image_mapping: ReplayCitation | null; sequences: ReplaySequence[]; warnings: string[]
+  synchronization: { status: 'unavailable'; enabled: false; time_transform: null }
+  reconstruction: { status: 'schematic_only'; trajectory: null; fidelity_error: null }
+}
+export type ReplayCatalog = { schema_version: '1'; cases: ReplayCase[] }

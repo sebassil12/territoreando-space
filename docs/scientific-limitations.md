@@ -17,7 +17,7 @@ riesgo de incendio, ni un gemelo digital, ni un sistema de seguridad certificado
 | Tasas a partir de series Mapped TIFF | No apto | Huecos de hasta 183 s; intervalo mediano de 167 ms (no 33 ms). |
 | Significado de "BIT", "ICMAD", grupos "F" | Documentado | DoD Tabla 4 (BIT = Built-In Test, no son quemas; ICMAD = anotación de exposición/ganancia); DoD tras la Figura 1 (F1/F2). |
 | Cobertura temporal de las quemas | Parcial | Solo ≈28,8 % de los JPEG recibidos está en local (manifiesto xlsx); S9 local cubre ≈167 s de 900 s. |
-| Datos de sensores (O2, CO2, presión, temperaturas) | No disponible como números | Los Excel citados en el DoD no están; solo gráficos raster (muestra 1, CO2). |
+| Sensor data (O2, CO2, pressure, temperatures) | Not loaded into runtime catalogs | Sample 5 numeric workbook located remotely; bounded telemetry inspected in the [validation audit](saffire2-validation-audit.md). Earlier local assets are raster plots only. |
 
 ## Artefactos conocidos que afectan las métricas de píxeles
 - **Iluminación con LED verde** durante 0,4 s cada 2 s (urban2019 p.173) ilumina toda la muestra; los picos de brillo
@@ -72,7 +72,8 @@ See [equation, assumptions and API contract](dimensionless-model.md).
 
 The equation was verified against the NASA PDF. **The implementation is not experimentally validated**
 and is not calibrated to a SAFFIRE sequence. Its scope is a steady 0D opposed-flow calculation;
-no frontend, dimensional speed or transient 1D evolution is implemented.
+the frontend presents mathematical results and an interactive schematic 3D only.
+Dimensional speed and transient 1D evolution are not implemented.
 The exposed non-negative input domain is mathematical, not an empirically validated operating range.
 Positive, zero, negative and non-real branches are not physical diagnoses of burning or extinction.
 The API supplies no material properties, temperatures, heat release or risk.
@@ -124,13 +125,80 @@ Common scenario controls require documented model dependencies before they can
 support a physical sensitivity claim. No current steady 0D model supplies flame
 position, shape or time evolution for a calibrated visual twin.
 
-**IMPLEMENTED:** mathematical dimensionless routing and provenance-aware assessment.
+**IMPLEMENTED:** mathematical dimensionless routing, provenance-aware assessment
+and a guided React interface with Three.js. Numeric inputs start blank. Choosing
+a clearly labelled setup explicitly accepts its source conditions/assumptions as
+user declarations. Every scenario edit invalidates prior results.
+
+In mathematical exploration mode, the 3D receives no numeric model outputs. Its fuel mesh, purple flame symbol,
+colors, scale, lighting and illustrative orientation are presentation choices.
+Only airflow direction, optional shape category and gravity label reflect scenario
+declarations. None is an experimental observation. The fixed flame symbol remains
+unchanged for positive, zero, negative or non-real branches and does not establish
+physical burning. Display orientation is not a new physical model parameter.
+No temperature, physical shape, dimensions, flame motion or extinction is inferred.
+See the [complete 3D classification](digital-twin-3d.md#what-drives-the-3d).
 **BLOCKED:** 2016/Urban numerical evaluation, unsupported physical outputs,
 unreviewed essential citations/derivations and documented-experiment evaluation.
 Urban's printed equation page remains unresolved. Complete hypothetical parameters
 do not unblock either research evaluator.
 
 **PENDING:** reviewed parameter evidence, dimensional conversion adapters,
-frontend and calibrated visual prediction. **VALIDATED:** none of these models
+transient models and calibrated visual prediction. **VALIDATED:** none of these models
 has experimental validation by this project. Submitted citations and software
 tests cannot automatically promote a result into scientific validation.
+
+## SAFFIRE steady-reference playback boundaries
+
+**IMPLEMENTED:** separate data-driven playback for three cited SAFFIRE cases.
+**EXPERIMENTAL:** published steady Vf/lp references, with inherited file/page
+transcriptions not independently reverified against the original PDF.
+**DERIVED:** constant-speed local kinematics and a one-length transit window,
+not measured continuous motion, ignition timing or a full burn.
+**SCHEMATIC:** the envelope uses pyrolysis length as a visual proxy; flame
+height/width/color and the growing dark traversed region are not measured flame
+geometry, temperature, char extent or mass consumption. No uncertainty is invented.
+No pixels are converted to lengths, and no image calibration is implied.
+
+This consumes published outputs; it does not solve Urban's missing analytical
+inputs or reproduce its equation. 2016/Urban evaluators remain **BLOCKED**.
+**PENDING:** independently reviewed source/time series and calibrated observation
+comparison. **VALIDATED:** no predictive physical model. See
+[playback source limits and derivation](saffire-playback.md).
+
+## Procedural appearance is not added predictive physics
+
+**PHYSICS-DRIVEN** means the renderer obeys the existing derived SAFFIRE support,
+rate/time and documented airflow direction. It does not mean measured instantaneous
+flame geometry. **PHYSICALLY-INSPIRED** density, palette, noise, surface glow, char
+appearance and heat-like background displacement are art parameters without
+quantitative scientific meaning. Zero imposed upward drift is a visual convention,
+not a solved buoyancy balance. Flow speed is displayed as an inherited experimental
+condition; it does not set a fabricated quantitative turbulence or flame response.
+There is no spark emission, color-temperature scale, CFD, new validation or change
+to the blocked models. Pause and playback-rate controls affect presentation time.
+See [complete classifications](digital-twin-3d.md#procedural-combustion-renderer-implemented).
+
+## NASA Evidence Replay boundaries
+
+The [comparison view and evidence audit](nasa-evidence-replay.md) do not establish
+scientific fidelity. Exact Urban Vf/lp pairs remain unverified; the new replay
+mode displays them only for audit and shows a generic 3D support without a flame
+or physical animation. NASA-source-checked sample geometry does not establish
+camera calibration or measured flame shape. Historical catalog availability does
+not establish local image presence. Filename-relative timestamps do not register
+the virtual playback clock. Synchronization and numerical fidelity errors remain
+unavailable; no automatic promotion to validation is possible through metadata.
+
+
+### Experimental validation preparation: updated source availability
+
+The [focused Sample 5/C2 audit](saffire2-validation-audit.md) found remote onboard
+JPEG archives and numeric sensor data, with an exact first-image/camera-trigger
+epoch match. Previous statements about unavailable sensor numbers refer to the
+checkout/runtime catalogs, not absence from NASA PSI. A sampled electrical-enable
+event is not optical ignition; the initial match does not establish exposure
+latency, clock stability or alignment with the 3D's virtual steady window.
+Source-checked length/width also do not resolve conflicting thickness reports.
+The existing reference-driven renderer cannot independently validate its own input
+values or represent the entire ignition-to-termination experiment.

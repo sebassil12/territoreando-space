@@ -6,6 +6,16 @@
       "file": "descompressed/urban2019.pdf",
       "citation": "Urban D.L., Ferkul P., Olson S., et al. Flame spread: Effects of microgravity and scale. Combustion and Flame 199 (2019) 168-182.",
       "doi": "10.1016/j.combustflame.2018.10.012"
+    },
+    "nasa2017": {
+      "file": "20180005168.pdf",
+      "citation": "Urban et al., Saffire: A Novel Approach to Study of Spacecraft Fire Safety Using Un-manned Spacecraft (2017).",
+      "url": "https://ntrs.nasa.gov/api/citations/20180005168/downloads/20180005168.pdf"
+    },
+    "psi99-readme": {
+      "file": "PSI-99_Science Documents_SAFFIRE-II Readme.docx",
+      "citation": "NASA PSI-99, Data Organization Document, version 1.",
+      "url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-99/download?file=6840cdd84a0e24d624cebd95&version=1"
     }
   },
   "results": [
@@ -128,6 +138,26 @@
       "source": "urban2019",
       "page": 175,
       "notes": "Different flight (CRS OA-7). Steady pyrolysis length 5 cm; overshoot 8.2 cm."
+    },
+    {
+      "id": "saffire3-pyrolysis-length",
+      "experiment": "Saffire-3 (large sample, context only)",
+      "material": "SIBAL cotton-fiberglass fabric",
+      "dimensions": "94 cm long x 40.6 cm wide",
+      "oxygen": "21.2% O2",
+      "flow": "25 cm/s",
+      "pressure": "",
+      "published_result": "steady pyrolysis length",
+      "value": 5,
+      "unit": "cm",
+      "source": "urban2019",
+      "page": 175,
+      "notes": "Structured from the existing saffire3-spread-rate notes (Steady pyrolysis length 5 cm). Original PDF page remains independently unverified for this increment.",
+      "transcribed_from": {
+        "reference_id": "saffire3-spread-rate",
+        "field": "notes"
+      },
+      "verification": "prior_transcription_not_independently_reverified"
     }
   ],
   "facts": [
@@ -138,5 +168,91 @@
     {"id": "fact-tracking", "text": "Pyrolysis front and base were tracked along the sample centerline; pyrolysis length is the distance between them.", "source": "urban2019", "page": 175},
     {"id": "fact-conclusion", "text": "In forced concurrent flow (20-25 cm/s) flames reached a quasi-steady state with limiting pyrolysis lengths of about 4-5 cm and spread rates around 2 mm/s.", "source": "urban2019", "page": 181},
     {"id": "fact-pmma", "text": "The thick PMMA sample asymptotically reached a limiting length in microgravity.", "source": "urban2019", "page": 181}
+  ],
+  "playback_cases": [
+    {
+      "case_id": "saffire1",
+      "label": "SAFFIRE-1 · concurrent",
+      "airflow_direction": "concurrent",
+      "vf_reference_id": "saffire1-spread-rate",
+      "lp_reference_id": "saffire1-pyrolysis-length",
+      "source_review": "prior_transcription_not_independently_reverified",
+      "time_series_status": "no_traceable_numeric_series_in_repository",
+      "replay_audit": {
+        "reviewed_on": "2026-10-17",
+        "reference_status": "exact_vf_lp_pair_unverified",
+        "reference_note": "Original Urban PDF unavailable. NASA presentation p.31 reports differently rounded rates; no substitution or curve digitization. Exact Vf/lp pair remains unverified.",
+        "comparison_source": "nasa2017",
+        "comparison_page": 31,
+        "geometry": {
+          "label": "Published reference",
+          "dimensions": "94 cm long x 40.6 cm wide",
+          "source": "nasa2017",
+          "page": 30,
+          "location": "Table 1, row I-1",
+          "status": "source_checked_not_camera_calibration"
+        },
+        "image_mapping": null
+      }
+    },
+    {
+      "case_id": "saffire3",
+      "label": "SAFFIRE-3 · concurrent",
+      "airflow_direction": "concurrent",
+      "vf_reference_id": "saffire3-spread-rate",
+      "lp_reference_id": "saffire3-pyrolysis-length",
+      "source_review": "prior_transcription_not_independently_reverified",
+      "time_series_status": "no_traceable_numeric_series_in_repository",
+      "replay_audit": {
+        "reviewed_on": "2026-10-17",
+        "reference_status": "exact_vf_lp_pair_unverified",
+        "reference_note": "Original Urban PDF unavailable. NASA presentation p.31 reports differently rounded rates; no substitution or curve digitization. Exact Vf/lp pair remains unverified.",
+        "comparison_source": "nasa2017",
+        "comparison_page": 31,
+        "geometry": {
+          "label": "Published reference",
+          "dimensions": "94 cm long x 40.6 cm wide",
+          "source": "nasa2017",
+          "page": 30,
+          "location": "Table 1, row III-1",
+          "status": "source_checked_not_camera_calibration"
+        },
+        "image_mapping": null
+      }
+    },
+    {
+      "case_id": "saffire2-s5",
+      "label": "SAFFIRE-2 · Sample 5",
+      "airflow_direction": "concurrent",
+      "vf_reference_id": "saffire2-s5-spread-rate",
+      "lp_reference_id": "saffire2-s5-pyrolysis-length",
+      "source_review": "prior_transcription_not_independently_reverified",
+      "time_series_status": "no_traceable_numeric_series_in_repository",
+      "replay_audit": {
+        "reviewed_on": "2026-10-17",
+        "reference_status": "exact_vf_lp_pair_unverified",
+        "reference_note": "Original Urban PDF unavailable. NASA presentation p.31 reports differently rounded rates; no substitution or curve digitization. Exact Vf/lp pair remains unverified.",
+        "comparison_source": "nasa2017",
+        "comparison_page": 31,
+        "geometry": {
+          "label": "Published reference",
+          "dimensions": "29 cm long x 5 cm wide",
+          "source": "nasa2017",
+          "page": 30,
+          "location": "Table 1, row II-5",
+          "status": "source_checked_not_camera_calibration"
+        },
+        "image_mapping": {
+          "group": "S5",
+          "cameras": [
+            "C1",
+            "C2"
+          ],
+          "source": "psi99-readme",
+          "page": 2,
+          "location": "Table 2; folder linkage by shared sample/camera label"
+        }
+      }
+    }
   ]
 }

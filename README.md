@@ -137,6 +137,8 @@ Todas las respuestas: `{ "data", "source", "warnings", "quality" }`.
 | `GET /api/findings/{id}` | hallazgo + condiciones de la muestra + secuencias relacionadas con advertencias; 404 si no existe |
 | `GET /api/conditions` | condiciones citadas por muestra |
 | `GET /api/compare?samples=5,9` o `?finding_ids=…` | condiciones lado a lado con factores que difieren, faltan o están en conflicto; sin conclusiones |
+| `GET /api/twin/playback-cases` | Versioned published-reference playback catalog with provenance and derived anchors |
+| `GET /api/twin/playback-cases/{case_id}` | One available/unavailable SAFFIRE playback case |
 | `GET /api/twin/models` | Implemented equation, definitions, assumptions, versions and source |
 | `POST /api/twin/evaluate` | Dimensionless cases and mathematical branch states |
 | `GET /api/twin/scenario-models` | Three-model registry, requirements, evidence and implementation availability |
@@ -166,23 +168,80 @@ Lista completa: [docs/scientific-limitations.md](docs/scientific-limitations.md)
 
 The React dashboard explores Saffire-II microgravity combustion images, temporal continuity,
 frame provenance, pixel statistics and separately labeled published scientific references.
-The first twin increment adds an **API-only, dimensionless steady 0D model**: the thermally thin
+The twin implements a **dimensionless steady 0D model**: the thermally thin
 plus-root branch of Bhattacharjee et al., NASA NTRS 20040053557, Eq. (5), p.202.
 
 The equation has been verified against the source PDF; the implementation is **scientifically
 unvalidated**. It evaluates explicit hypothetical inputs, without materials, dimensional speed,
-physical extinction diagnosis, temperature, heat release, risk or CFD. There is no model frontend,
-transient 1D simulation or calibrated/synchronized digital twin.
+physical extinction diagnosis, temperature, heat release, risk or CFD. The React Scenario Builder
+provides a guided two-input flow, interactive schematic 3D and mathematical results; transient 1D simulation and a
+calibrated/synchronized digital twin remain pending.
 See [model equation, assumptions and API contract](docs/dimensionless-model.md).
 
-The **Scenario Engine backend is IMPLEMENTED**: version 1 scenarios, a registry
+The **Scenario Engine, guided React Scenario Builder and schematic 3D are IMPLEMENTED**: version 1 scenarios, a registry
 of three models, compatibility/requirements/evidence assessment and an adapter
 to the existing dimensionless evaluator. Bhattacharjee 2016 and Urban 2019 are
 **BLOCKED**, even with complete hypothetical inputs; missing inputs and source
-limitations are reported explicitly. Frontend scenarios, reviewed input evidence,
-dimensional conversions and a visual twin are **PENDING**. No physical model is
+limitations are reported explicitly. Reviewed input evidence, sweeps,
+dimensional predictions and a calibrated dynamic twin are **PENDING**. No physical model is
 experimentally **VALIDATED** by this project.
 See [Scenario Engine contract and examples](docs/scenario-engine.md#implemented-api-contract).
 
 
-Model endpoints are API-only and work without raw assets. Scenario assessment preserves inputs, sources, warnings and quality. Scientific defaults and dimensional conversions are absent. See [scenario requests and response statuses](docs/scenario-engine.md#implemented-api-contract).
+Open **Digital Twin** at `http://localhost:5173/#Twin`. The initial **SAFFIRE evidence
+playback** mode supports SAFFIRE-1, SAFFIRE-3 and SAFFIRE-2 Sample 5. Choose a case,
+inspect its published source/quality, then Play, Pause, Reset or scrub the timeline.
+Front/base positions and longitudinal extent use derived steady kinematics; this
+is not continuous measured motion, CFD or a reproduction of the Urban equation.
+Source values/pages are inherited transcriptions, not newly verified against the PDF.
+See [playback derivation, API and limitations](docs/saffire-playback.md).
+
+Choose **Explore a mathematical model**, then an exploration and
+explicitly accept its displayed hypothetical setup. The dimensionless flow asks
+only for `eta_g` and `radiation_number`, with plain-language help and no numeric
+defaults. **Calculate my scenario** checks compatibility before evaluation.
+Advanced conditions and Scientific details preserve all scientific evidence.
+Every scenario edit invalidates previous results.
+
+In mathematical mode, the central Three.js scene supports orbit, zoom and display orientation. Its
+purple flame is fixed, schematic and not to scale; it never reacts to mathematical
+results or physical numeric inputs. Direction arrows and gravity/shape labels
+reflect declarations only. No experimental data drives this scene. A browser
+without WebGL can still calculate and inspect evidence.
+See the [guided demo](docs/demo-script.md#scenario-builder),
+[3D classification and technology](docs/digital-twin-3d.md) and
+[contracts](docs/scenario-engine.md#implemented-api-contract).
+
+If port 8000 is occupied, run the API and proxy on another port in separate terminals:
+
+```bash
+uv run uvicorn backend.app:app --reload --port 8107
+cd frontend
+FLAME_API_TARGET=http://127.0.0.1:8107 npm run dev
+```
+
+The default proxy still targets port 8000. Run `cd frontend && npm test` for the
+new focused interface tests, in addition to the existing Python, lint and build checks.
+
+### Procedural SAFFIRE view
+
+The SAFFIRE mode now renders GPU volumetric fire and a textured virgin/active/char
+strip, with Play/Pause, Reset, 0.25x/0.5x/1x/2x and orbital controls. Front/base/length
+follow derived evidence; color, noise, glow, flame shape and distortion are
+**PHYSICALLY-INSPIRED**, not CFD or temperature predictions. Main-view metrics
+remain compact; **Scientific details** retains quality/provenance and inherited
+source-review limits. [Exact visual classifications](docs/digital-twin-3d.md#procedural-combustion-renderer-implemented).
+
+### NASA Evidence Replay
+
+Open **Digital Twin → NASA Evidence Replay** for source images on the left and the
+existing schematic 3D on the right. Select a camera/processing variant to inspect
+frames, filename-relative timestamps, gaps, stored pixel metrics and sources.
+Missing assets produce explicit limitations. The exact Urban Vf/lp pairs remain
+unverified, so this new mode does not animate them or claim synchronized playback
+or quantitative fidelity. The existing playback and Scenario Builder remain.
+See [evidence audit, API and remaining requirements](docs/nasa-evidence-replay.md).
+
+`GET /api/twin/evidence-replay` supplies the additive comparison catalog. Restore
+`descompressed/` or set `SAFFIRE_RAW_DIR` for actual images; committed catalog
+availability is historical. No new dependencies or scientific model were added.
