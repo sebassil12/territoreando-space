@@ -6,7 +6,6 @@ export const scenarioMessages = {
   ...replayMessages,
   ...guidedMessages,
   ...playbackMessages,
-  'tab.Twin': 'Digital Twin',
   'twin.title': 'Scenario Builder',
   'twin.subtitle': 'Configure a hypothetical scenario. Inspect model readiness before evaluating.',
   'twin.configuration': 'Configuration',

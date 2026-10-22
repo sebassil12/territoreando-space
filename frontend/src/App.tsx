@@ -3,6 +3,9 @@ import { useT, type Lang } from './i18n'
 import { Assistant } from './screens/Assistant'
 import { Compare } from './screens/Compare'
 import { Evidence, EvidenceViewer } from './screens/Evidence'
+import { Fundamentals } from './screens/Fundamentals'
+import { Onboarding } from './screens/Onboarding'
+import { TABS, type TabId } from './onboarding/routes'
 import { FindingDetail } from './screens/FindingDetail'
 import { FindingsExplorer } from './screens/FindingsExplorer'
 import { Limitations } from './screens/Limitations'
@@ -11,17 +14,16 @@ import { SafetyOverview } from './screens/SafetyOverview'
 import { Twin } from './screens/Twin'
 
 // Claves internas de pestaña (en inglés) usadas en los enlaces por hash; solo se traduce la etiqueta.
-const TABS = ['Overview', 'Findings', 'Ranked', 'Compare', 'Evidence', 'Assistant', 'Twin', 'Limitations'] as const
-type Tab = (typeof TABS)[number] | 'Viewer'
+type Tab = TabId | 'Viewer'
 const DEFAULT_SEQUENCE = 'S1-C2-raw-jpeg-part1'
 
 type Route = { tab: Tab; id: string | null }
 
-// La navegación vive en el hash: #Findings/<finding_id>, #Viewer/<sequence_id>, #Compare, …
+// La navegación vive en el hash: #Onboarding/<paso>, #Findings/<finding_id>, #Viewer/<sequence_id>, #Compare, …
 function parseHash(): Route {
   const [tab, id] = decodeURIComponent(location.hash.slice(1)).split('/')
-  const isTab = tab === 'Viewer' || TABS.includes(tab as (typeof TABS)[number])
-  return { tab: isTab ? (tab as Tab) : 'Overview', id: id || null }
+  const isTab = tab === 'Viewer' || TABS.includes(tab as TabId)
+  return { tab: isTab ? (tab as Tab) : 'Onboarding', id: id || null }
 }
 
 function useHashRoute(): Route {
@@ -44,6 +46,8 @@ export default function App() {
     <div className="mx-auto max-w-7xl px-4 py-6">
       <Header active={tab === 'Viewer' ? 'Evidence' : tab} />
       <main>
+        {tab === 'Onboarding' && <Onboarding step={Number(id) || 1} />}
+        {tab === 'Fundamentals' && <Fundamentals />}
         {tab === 'Overview' && <SafetyOverview />}
         {tab === 'Findings' && (id ? <FindingDetail findingId={id} /> : <FindingsExplorer />)}
         {tab === 'Ranked' && <Ranked />}
