@@ -65,3 +65,7 @@ validator, tests, docs).
 - Final checks: `uv run pytest -q` 224 passed; `uv run ruff check pipeline backend tests` all passed;
   `npm run lint` exit 0, no findings; `npm run build` ok (pre-existing chunk-size warning); `npm test` 16/16.
 - Next step: orchestrator decides RDD assessment, push and PR (target `development`).
+- T4 commit: 6541223.
+- T5 (user request): translated the seven new findings' visible text (title, summary, observation, rationales,
+  limitations, source_location) to Spanish to match the existing 24 findings; verbatim `source_quote`, material,
+  condition and metric stay in English as in existing findings. `uv run pytest -q`: 224 passed.
