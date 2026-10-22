@@ -103,3 +103,24 @@ a candidate time correspondence, without certifying clock drift, optical ignitio
 or the virtual 3D origin. A renewed publisher/Edinburgh/HAL search did not retrieve
 a full Urban 2019 copy; exact Vf/lp review remains blocked. Source geometry
 agreement covers length/width, not disputed thickness or camera calibration.
+
+## Microgravity published references
+
+Verified against text extracted from the NTRS/NASA PDFs (not stored in the repository). Values live only in
+`data/scientific_reference_results.json` (**Published reference**); `page` is the PDF page and `locator` names
+the table/slide. Findings citing these sources use the PDF URL as `source_path`.
+
+| ID | Source | Used for |
+|---|---|---|
+| ferkul2017 | Ferkul et al., *Results of Large-Scale Spacecraft Flammability Tests*, ICES-2017, NTRS [20170008805](https://ntrs.nasa.gov/api/citations/20170008805/downloads/20170008805.pdf) | Table I (PDF p.29): Saffire-1/2 spread rates, silicone no-spread, Nomex not ignited, thick-PMMA regression; flame powers (p.8); Test 1 igniter energy (p.10). `F-ferkul2017-*` |
+| ferkul2014-bass2 | BASS-II poster set, ASGSR 2014, NTRS [20160000593](https://ntrs.nasa.gov/api/citations/20160000593/downloads/20160000593.pdf) | PDF p.18: PMMA rod 1-g blowoff 16% O2, microgravity spread at 13.6% O2, margin -2.4% O2. `F-bass2-001` |
+| olson2015 | Olson & Ferkul, *Microgravity Flammability of PMMA Rods in Concurrent Flow*, 2015, NTRS [20150008961](https://ntrs.nasa.gov/api/citations/20150008961/downloads/20150008961.pdf) | PDF p.7: fit intercept 13.3% O2 |
+| urban2021 | Urban et al., ICES-2021-266 (Saffire IV/V), NTRS [20210011521](https://ntrs.nasa.gov/api/citations/20210011521/downloads/ICES%202021-266%200503-2021%20final.pdf) | Table 1 (p.3) conditions; heat release up to 10 kW (p.2); Table 2 and duct-height effect (p.8). `F-urban2021-*` |
+| urban2021-flare | Urban, FLARE workshop update 2021, NTRS [20210021181](https://ntrs.nasa.gov/api/citations/20210021181/downloads/NASA%20Materials%20Flammability%20Update%20update%209.09.2021%20Final.pdf) | Saffire IV/V test matrix (p.7, corroboration); bubbling-polymer fact (p.8) |
+| urban2025 | Urban et al., ICES-2025-392, NTRS [20250002114](https://ntrs.nasa.gov/api/citations/20250002114/downloads/ICES_2025-392-correctedcaptions.pdf) | p.2: Test 1 pass criterion, damaged zone < 15.2 cm (6 in) |
+| ochmo2023 | NASA OCHMO-TB-008 Rev A (2023), [Fire Protection](https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-008-fire-protection.pdf) | p.3: ISS ventilation shutdown on smoke detection; portable CO2 extinguisher in U.S. modules |
+
+Open source conflicts, kept as separate records: Saffire-2 S5 spread rate 2.03 mm/s (urban2019 p.177) vs
+2.1 mm/s (ferkul2017 Table I); Saffire-2 oxygen 22.1% (urban2019, ferkul2017 "~22.1") vs 21% (urban2021
+Table 2, `F-urban2021-001`). Urban 2021 text (p.2) gives a 25 to 15 cm duct-height change while Table 2 lists
+46 vs 30 cm; Table 2 is cited.

@@ -28,7 +28,7 @@ BASS-II 2014, Olson 2015, Urban ICES-2021, FLARE 2021, Urban ICES-2025, OCHMO-TB
 - [x] T1 — Schema: optional fields + seven sources (route: delegated writer, same writer as T2)
 - [x] T2 — Verified results and facts, test-first (route: delegated writer)
 - [x] T3 — Cited findings for external NTRS sources (route: delegated writer)
-- [ ] T4 — Docs: sources and data dictionary (route: delegated writer)
+- [x] T4 — Docs: sources and data dictionary (route: delegated writer)
 
 Route evidence: orchestrator delegated one bounded writer (2+ non-trivial files: reference JSON, findings JSON,
 validator, tests, docs).
@@ -58,3 +58,10 @@ validator, tests, docs).
   224 passed; ruff clean. F-ferkul2017-004 uses theme `flame_spread` (not `flame_length_limit`) because the
   latter made it a top-3 keyword hit for "PMMA limiting length", breaking the urban2019-only assistant test.
   Ranking now opens with F-bass2-001 and F-ferkul2017-003 (high/high published results, per public rules).
+- T3 commit: 63caaed.
+- T4: `docs/sources.md` (new "Microgravity published references" section with open conflicts) and
+  `docs/data-dictionary.md` (optional result fields, finding ID patterns, language and URL `source_path`).
+  Passive docs: structural readback only, no RED applicable.
+- Final checks: `uv run pytest -q` 224 passed; `uv run ruff check pipeline backend tests` all passed;
+  `npm run lint` exit 0, no findings; `npm run build` ok (pre-existing chunk-size warning); `npm test` 16/16.
+- Next step: orchestrator decides RDD assessment, push and PR (target `development`).

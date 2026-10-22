@@ -75,20 +75,34 @@ Muestreo: uno de cada 5 fotogramas, más el primer fotograma tras cada hueco y e
 omiten cuando ningún píxel alcanza el umbral.
 
 ## scientific_reference_results.json
-Valores transcritos de urban2019 con números de página. Etiqueta: *Referencia publicada* (*Published reference*).
+Valores transcritos de urban2019 y de fuentes NASA NTRS (ver `docs/sources.md`) con números de página. Etiqueta: *Referencia publicada* (*Published reference*).
+
+Optional, additive result fields (absent on older records; consumers select rows by `id`):
+
+| Field | Meaning |
+|---|---|
+| flow_direction | `concurrent`, `opposed` or null |
+| gravity | `microgravity`, `1g` or null |
+| thickness | sample thickness as stated by the source (text) |
+| value_qualifier | `approx`, `range`, `plus_minus`, `no_spread`, `not_ignited`, `fit_extrapolation`, `upper_bound`, `criterion` or null. `no_spread`, `not_ignited` and `range` keep `value: null` |
+| value_range | `[min, max]` in `unit`, only with `value_qualifier = range` |
+| uncertainty | ± value in `unit`, only with `value_qualifier = plus_minus` |
+| locator | table/slide/section plus PDF page, e.g. `Table I (continued), PDF p.29` |
+
+`page` stays a positive integer (PDF page for NTRS sources). Checked by `tests/test_reference_results.py`.
 
 ## findings.json — hallazgos transcritos a mano (`data/processed/findings.json`)
 Validados al cargar por `backend/findings.py`; un hallazgo inválido se excluye con advertencia.
 
 | Campo | Significado |
 |---|---|
-| finding_id | estable: `F-urban2019-NNN`, `F-dod-NNN`, `F-data-NNN` |
-| title, summary, observation | texto en español, fiel a la fuente; `observation` lleva los valores citados |
+| finding_id | estable: `F-urban2019-NNN`, `F-dod-NNN`, `F-data-NNN`; NTRS sources: `F-ferkul2017-NNN`, `F-bass2-NNN`, `F-urban2021-NNN` |
+| title, summary, observation | fiel a la fuente; `observation` lleva los valores citados. Hallazgos previos en español; los de fuentes NTRS en inglés (AGENTS.md) |
 | experiment, sample, material, condition | según la fuente; `sample` = "1"…"9" solo si la fuente nombra la muestra; desconocido → null |
 | theme | flame_spread, flame_length_limit, test_conditions, scale_and_generalization, image_interpretation, data_provenance, data_coverage, calibration |
 | metric, value, unit | `value` numérico solo con `unit` y con evidence_type `published_result` o `instrument_measurement` |
 | evidence_type | published_result, instrument_measurement, image_observation, derived_metric, data_quality_note (la interpretación nunca se guarda aquí) |
-| source_path, source_location, source_quote | archivo (en `descompressed/` o documentado en `docs/sources.md`), página/tabla/sección y cita textual en inglés |
+| source_path, source_location, source_quote | archivo (en `descompressed/`, documentado en `docs/sources.md`, o URL NTRS de `DOCUMENTED_SOURCES`), página/tabla/sección y cita textual en inglés |
 | confidence + confidence_rationale | high / medium / low (criterios abajo) |
 | safety_relevance + safety_relevance_rationale | high / medium / low (criterios abajo); nunca predicción de riesgo |
 | limitations | lista de textos |
