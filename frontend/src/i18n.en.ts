@@ -1,9 +1,11 @@
 // Diccionario inglés de la UI. Los valores del backend (hallazgos, advertencias, respuestas) no se traducen.
 import type { es } from './i18n.es'
 import { scenarioMessages } from './i18n.scenario'
+import { onboardingMessages } from './i18n.onboarding'
 
 export const en: Record<keyof typeof es, string> = {
   ...scenarioMessages,
+  ...onboardingMessages.en,
   'app.subtitle': '· Cited SAFFIRE-II findings',
   'app.views': 'Views',
   'app.language': 'Language',

@@ -1,0 +1,131 @@
+import { fundamentalsMessages } from './onboarding/fundamentalsMessages'
+
+// Guided onboarding copy (es/en). Numbers are restated only with the citation shown next to them (onboarding/content.ts).
+const es = {
+  'tab.Onboarding': 'Inicio guiado',
+  'tab.Fundamentals': 'Fundamentos',
+  'tab.Twin': 'Reconstrucción 3D',
+  'onb.title': 'Fuego en microgravedad, paso a paso',
+  'onb.intro': 'Siete pasos cortos para entender qué estudió SAFFIRE-II, qué datos hay en esta app y cómo explorarlos.',
+  'onb.progress': 'Paso {n} / {total}',
+  'onb.steps': 'Pasos del recorrido',
+  'onb.prev': '← Anterior',
+  'onb.next': 'Siguiente →',
+  'onb.general': 'Conocimiento general',
+  'onb.source': 'Fuente',
+  'onb.newHere': '¿Sin formación en combustión? Empiece por Fundamentos →',
+
+  'onb.step.problem.title': 'El problema: fuego en una nave tripulada',
+  'onb.problem.p1': 'En una nave no hay salida de emergencia ni bomberos: la tripulación convive con el fuego hasta controlarlo. Por eso importa saber cómo nace, crece y se apaga una llama allí.',
+  'onb.problem.p2': 'Los autores señalan que si la llama tiene un tamaño máximo, ese límite acota cuánto calor puede liberar dentro del vehículo.',
+  'onb.problem.p3': 'Se ensayaron telas con algodón porque la ropa de la tripulación es mayormente de algodón.',
+
+  'onb.step.microgravity.title': 'Por qué la microgravedad cambia el fuego',
+  'onb.microgravity.p1': 'En la Tierra el aire caliente sube (flotabilidad) y arrastra aire fresco hacia la llama. En microgravedad casi no hay flotabilidad: el aire solo se mueve si algo lo empuja.',
+  'onb.microgravity.p2': 'En una nave ese empuje lo da la ventilación. Los ensayos usaron un flujo forzado de 20–25 cm/s, típico de la circulación de aire en naves según la fuente.',
+  'onb.microgravity.p3': 'Importa el sentido: la llama puede avanzar contra el flujo (opuesto) o a favor del flujo (concurrente). En las muestras grandes, a favor del flujo fue más rápida.',
+
+  'onb.step.experiment.title': 'El experimento SAFFIRE-II',
+  'onb.experiment.p1': 'Se quemaron nueve muestras pequeñas (29 cm x 5 cm) en un túnel de flujo dentro del vehículo de carga Cygnus, ya separado de la Estación Espacial.',
+  'onb.experiment.p2': 'Materiales: silicona, tela SIBAL (algodón y fibra de vidrio), PMMA (acrílico) y una muestra PMMA a Nomex.',
+  'onb.experiment.p3': 'Dos cámaras filmaron a 30 fotogramas por segundo; un LED verde iluminaba la muestra 0,4 s cada 2 s para ver el frente carbonizado.',
+  'onb.experiment.p4': 'Los resultados publicados incluyen la velocidad de propagación (2,03 mm/s en la muestra 5) y la longitud de pirólisis (4,5 cm).',
+  'onb.experiment.p5': 'Los sensores (O₂, CO₂, presión, temperaturas) no están disponibles como números en esta app.',
+
+  'onb.step.data.title': 'Qué datos tenemos',
+  'onb.data.intro': 'Conteos en vivo desde la API de esta app:',
+  'onb.data.findings': 'hallazgos citados',
+  'onb.data.sequences': 'secuencias de imágenes',
+  'onb.data.samples': 'muestras con condiciones citadas',
+  'onb.data.frameCaption': 'Fotograma real de la NASA (secuencia {id}, t = {t} s). Imagen sin calibrar: brillo en píxeles, no temperatura.',
+  'onb.data.noImage': 'La imagen de ejemplo no está disponible en este equipo; el catálogo y los hallazgos siguen funcionando.',
+  'onb.data.coverage': 'Las imágenes locales cubren solo una parte de lo recibido (≈29 % de los JPEG).',
+
+  'onb.step.learned.title': 'Qué aprendimos',
+  'onb.learned.intro': 'Resultados publicados, en palabras simples. Cada uno enlaza a su hallazgo con la cita original.',
+  'onb.learned.F-urban2019-007': 'Con 20–25 cm/s de flujo la llama no crece sin fin: llega a un estado estable, con unos 4–5 cm de zona en pirólisis y unos 2 mm/s de avance.',
+  'onb.learned.F-urban2019-012': 'En muestras anchas, la llama a favor del flujo avanzó más rápido que contra el flujo; la fuente advierte un posible cruce cerca de 15 cm/s.',
+  'onb.learned.F-urban2019-004': 'En el PMMA grueso la llama dejó de crecer en una longitud límite de unos 9 cm.',
+  'onb.learned.F-urban2019-006': 'Un tamaño máximo de llama ayuda a acotar cuánto calor puede liberar un incendio dentro de la nave.',
+
+  'onb.step.unknowns.title': 'Qué no sabemos',
+  'onb.unknowns.u1': 'Las imágenes no dan temperatura ni calor liberado: brillo no es temperatura.',
+  'onb.unknowns.u2': 'No hay calibración validada: las medidas de imagen están en píxeles, no en centímetros.',
+  'onb.unknowns.u3': 'Solo una parte de las imágenes recibidas está en local; faltan las muestras 2 y 7.',
+  'onb.unknowns.u4': 'Los resultados valen para sus condiciones de ensayo; no predicen el riesgo de otra nave o material.',
+  'onb.unknowns.more': 'Ver todas las limitaciones →',
+
+  'onb.step.explore.title': 'Por dónde explorar',
+  'onb.explore.viewer': 'Evidencia: ¿cómo se ve la llama real, fotograma a fotograma?',
+  'onb.explore.compare': 'Comparación: ¿en qué se diferencian las condiciones de dos muestras?',
+  'onb.explore.findings': 'Hallazgos: ¿qué dice exactamente la fuente y dónde?',
+  'onb.explore.twin': 'Reconstrucción 3D: ¿cómo se ve un esquema del ensayo? (ilustrativo, no es medición)',
+  'onb.explore.fundamentals': 'Fundamentos: ¿qué conceptos necesito para leer los datos?',
+}
+
+const en: Record<keyof typeof es, string> = {
+  'tab.Onboarding': 'Guided start',
+  'tab.Fundamentals': 'Fundamentals',
+  'tab.Twin': '3D reconstruction',
+  'onb.title': 'Fire in microgravity, step by step',
+  'onb.intro': 'Seven short steps to understand what SAFFIRE-II studied, what data this app holds and how to explore it.',
+  'onb.progress': 'Step {n} / {total}',
+  'onb.steps': 'Tour steps',
+  'onb.prev': '← Back',
+  'onb.next': 'Next →',
+  'onb.general': 'General knowledge',
+  'onb.source': 'Source',
+  'onb.newHere': 'No combustion background? Start with Fundamentals →',
+
+  'onb.step.problem.title': 'The problem: fire in a crewed spacecraft',
+  'onb.problem.p1': 'A spacecraft has no emergency exit and no fire brigade: the crew must live with a fire until it is controlled. That is why it matters how a flame starts, grows and goes out there.',
+  'onb.problem.p2': 'The authors note that if a flame has a maximum size, that limit bounds how much heat it can release inside the vehicle.',
+  'onb.problem.p3': 'Cotton-blend fabric was tested because crew clothing is mostly cotton.',
+
+  'onb.step.microgravity.title': 'Why microgravity changes fire',
+  'onb.microgravity.p1': 'On Earth hot air rises (buoyancy) and pulls fresh air toward the flame. In microgravity there is almost no buoyancy: air only moves if something pushes it.',
+  'onb.microgravity.p2': 'In a spacecraft that push comes from ventilation. The tests used a forced flow of 20–25 cm/s, which the source calls typical of spacecraft air circulation.',
+  'onb.microgravity.p3': 'Direction matters: the flame can spread against the flow (opposed) or with it (concurrent). On the large samples, spread with the flow was faster.',
+
+  'onb.step.experiment.title': 'The SAFFIRE-II experiment',
+  'onb.experiment.p1': 'Nine small samples (29 cm x 5 cm) were burned in a flow tunnel inside the Cygnus cargo vehicle after it left the Space Station.',
+  'onb.experiment.p2': 'Materials: silicone, SIBAL fabric (cotton and fiberglass), PMMA (acrylic) and one PMMA-to-Nomex sample.',
+  'onb.experiment.p3': 'Two cameras recorded at 30 frames per second; a green LED lit the sample for 0.4 s every 2 s to show the char front.',
+  'onb.experiment.p4': 'Published results include the spread rate (2.03 mm/s for Sample 5) and the pyrolysis length (4.5 cm).',
+  'onb.experiment.p5': 'Sensor readings (O₂, CO₂, pressure, temperatures) are not available as numbers in this app.',
+
+  'onb.step.data.title': 'What data we have',
+  'onb.data.intro': 'Live counts from this app’s API:',
+  'onb.data.findings': 'cited findings',
+  'onb.data.sequences': 'image sequences',
+  'onb.data.samples': 'samples with cited conditions',
+  'onb.data.frameCaption': 'Real NASA frame (sequence {id}, t = {t} s). Uncalibrated image: pixel brightness, not temperature.',
+  'onb.data.noImage': 'The sample image is not available on this machine; the catalog and findings still work.',
+  'onb.data.coverage': 'Local images cover only part of what was received (≈29% of the JPEGs).',
+
+  'onb.step.learned.title': 'What we learned',
+  'onb.learned.intro': 'Published results in plain words. Each links to its finding with the original citation.',
+  'onb.learned.F-urban2019-007': 'With 20–25 cm/s of flow the flame does not grow forever: it reaches a steady state, with about 4–5 cm of pyrolyzing material and about 2 mm/s of spread.',
+  'onb.learned.F-urban2019-012': 'On wide samples, spread with the flow was faster than against it; the source warns of a possible crossover near 15 cm/s.',
+  'onb.learned.F-urban2019-004': 'On thick PMMA the flame stopped growing at a limiting length of about 9 cm.',
+  'onb.learned.F-urban2019-006': 'A maximum flame size helps bound how much heat a fire can release inside the spacecraft.',
+
+  'onb.step.unknowns.title': 'What we do not know',
+  'onb.unknowns.u1': 'Images give no temperature or heat release: brightness is not temperature.',
+  'onb.unknowns.u2': 'There is no validated calibration: image measurements are in pixels, not centimeters.',
+  'onb.unknowns.u3': 'Only part of the received images is stored locally; Samples 2 and 7 are missing.',
+  'onb.unknowns.u4': 'Results hold for their test conditions; they do not predict risk for another spacecraft or material.',
+  'onb.unknowns.more': 'See all limitations →',
+
+  'onb.step.explore.title': 'Where to explore',
+  'onb.explore.viewer': 'Evidence: what does the real flame look like, frame by frame?',
+  'onb.explore.compare': 'Compare: how do the conditions of two samples differ?',
+  'onb.explore.findings': 'Findings: what exactly does the source say, and where?',
+  'onb.explore.twin': '3D reconstruction: what does a schematic of the test look like? (illustrative, not a measurement)',
+  'onb.explore.fundamentals': 'Fundamentals: which concepts do I need to read the data?',
+}
+
+export const onboardingMessages = {
+  es: { ...es, ...fundamentalsMessages.es },
+  en: { ...en, ...fundamentalsMessages.en },
+}
