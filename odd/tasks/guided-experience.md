@@ -90,7 +90,7 @@ Ruta por tarea: D = delegada (2+ archivos no triviales), I = inline.
   `onboarding/fundamentalsMessages.ts`. RED observado (módulos inexistentes) antes de implementar.
   Evidencia: `npm test` 23/23; `npm run lint` 0 warnings/0 errors; `npm run build` OK (aviso de chunk >500 kB previo);
   `uv run pytest -q tests` 217 passed, 1 skipped (imágenes raw ausentes); `ruff check` OK. Revisión visual en Chrome:
-  conteos en vivo 24/21/9 y fallback de imagen sin raw.
+  conteos en vivo 24/21/9 y fallback de imagen sin raw. Commit: `2f6cf3e`.
 
 ## Siguiente paso
 Confirmar orden de prioridad (sugerido: T1 → T7 → T3 → T2 → T4 → T5 → T6 → T8) y crear `feat/guided-experience`.
