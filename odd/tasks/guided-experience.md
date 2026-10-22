@@ -92,5 +92,11 @@ Ruta por tarea: D = delegada (2+ archivos no triviales), I = inline.
   `uv run pytest -q tests` 217 passed, 1 skipped (imágenes raw ausentes); `ruff check` OK. Revisión visual en Chrome:
   conteos en vivo 24/21/9 y fallback de imagen sin raw. Commit: `2f6cf3e`.
 
+- 2026-10-21: revisión nativa de T0 (riesgo medio, `slice_budget_reached`, consentimiento otorgado): aprobada y
+  confirmada (lineage `review-f5935c1d80b4384a`). Hallazgos no bloqueantes, pendientes como T0.1:
+  tarjeta del visor rotulada "Evidence" (`onboarding/content.ts:46-52`); `LearnedRef` no distingue error de carga y
+  pierde la cita (`onboarding/steps.tsx:44-47`); sin test de paso inválido (0, 99, abc) en `App.tsx:50`.
+  Entrega: T0 suma 809 líneas (> 400); estrategia de cadena pendiente de decisión del usuario.
+
 ## Siguiente paso
-Confirmar orden de prioridad (sugerido: T1 → T7 → T3 → T2 → T4 → T5 → T6 → T8) y crear `feat/guided-experience`.
+T0.1 (hallazgos de la revisión) y luego T1 → T7 → T2 → T4 → T5 → T6 → T8 (T3 absorbida por T0).
