@@ -38,6 +38,10 @@ DOCUMENTED_SOURCES = frozenset({
     "descompressed/continuidad_saltos.csv",
     "descompressed/continuidad_series.csv",
     "descompressed/continuidad_cortes_entre_series.csv",
+    # Fuentes NASA NTRS remotas (docs/sources.md, "Microgravity published references"); sin copia local.
+    "https://ntrs.nasa.gov/api/citations/20170008805/downloads/20170008805.pdf",
+    "https://ntrs.nasa.gov/api/citations/20160000593/downloads/20160000593.pdf",
+    "https://ntrs.nasa.gov/api/citations/20210011521/downloads/ICES%202021-266%200503-2021%20final.pdf",
 })
 
 CONDITION_FLOAT_FIELDS = frozenset({"thickness_mm", "airflow_cm_s_dod", "airflow_cm_s_urban2019", "oxygen_pct",

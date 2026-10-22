@@ -27,7 +27,7 @@ BASS-II 2014, Olson 2015, Urban ICES-2021, FLARE 2021, Urban ICES-2025, OCHMO-TB
 - [x] T0 — Feature document (route: delegated writer)
 - [x] T1 — Schema: optional fields + seven sources (route: delegated writer, same writer as T2)
 - [x] T2 — Verified results and facts, test-first (route: delegated writer)
-- [ ] T3 — Cited findings for external NTRS sources (route: delegated writer)
+- [x] T3 — Cited findings for external NTRS sources (route: delegated writer)
 - [ ] T4 — Docs: sources and data dictionary (route: delegated writer)
 
 Route evidence: orchestrator delegated one bounded writer (2+ non-trivial files: reference JSON, findings JSON,
@@ -51,3 +51,10 @@ validator, tests, docs).
   property of the microgravity S6 value (2.6 mm/s). The S7 PMMA flame power text extracts as "460 + 50 W";
   no uncertainty is stored because the symbol is unconfirmed. Playback/replay consumers needed no change
   (they select by ID; `value: null` was already supported by `saffire2-s6-flow`).
+- T1/T2 commit: f037f48.
+- T3: RED `test_external_ntrs_findings_load_with_published_reference_links` (1 failed) → GREEN. Seven findings
+  (F-ferkul2017-001..004, F-bass2-001, F-urban2021-001..002) in English, verbatim source quotes, NTRS URL as
+  `source_path`; three NTRS URLs added to `DOCUMENTED_SOURCES` in `backend/findings.py`. `uv run pytest -q`:
+  224 passed; ruff clean. F-ferkul2017-004 uses theme `flame_spread` (not `flame_length_limit`) because the
+  latter made it a top-3 keyword hit for "PMMA limiting length", breaking the urban2019-only assistant test.
+  Ranking now opens with F-bass2-001 and F-ferkul2017-003 (high/high published results, per public rules).

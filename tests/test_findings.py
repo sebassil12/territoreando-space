@@ -152,3 +152,20 @@ def test_conditions_keep_unknowns_empty(client):
     rows = {r["sample"]: r for r in client.get("/api/conditions").json()["data"]}
     assert rows["6"]["airflow_cm_s_dod"] == 30 and rows["6"]["airflow_cm_s_urban2019"] == 25
     assert rows["9"]["oxygen_pct"] is None and rows["9"]["airflow_cm_s_urban2019"] is None
+
+
+NTRS_FINDINGS = {"F-ferkul2017-001", "F-ferkul2017-002", "F-ferkul2017-003", "F-ferkul2017-004", "F-bass2-001",
+                 "F-urban2021-001", "F-urban2021-002"}
+
+
+def test_external_ntrs_findings_load_with_published_reference_links():
+    refs = json.loads((PROCESSED.parent / "scientific_reference_results.json").read_text(encoding="utf-8"))
+    urls = {source["url"] for source in refs["sources"].values() if source.get("url")}
+    ids = {r["id"] for r in refs["results"]}
+    findings, _ = load_findings(FINDINGS, ValidationContext({}, Path("descompressed")))
+    loaded = {f.finding_id: f for f in findings}
+    assert NTRS_FINDINGS <= loaded.keys()
+    for fid in NTRS_FINDINGS:
+        assert loaded[fid].source_path in urls, fid
+        assert loaded[fid].reference_id is None or loaded[fid].reference_id in ids, fid
+    assert loaded["F-urban2021-001"].data_status == "conflicting"
